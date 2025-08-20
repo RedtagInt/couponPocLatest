@@ -6,8 +6,8 @@ export default function HomeLayout() {
     return <Redirect href="/(auth)" />;
   }
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-           <Stack.Screen name="index" options={{ headerShown: false }} />
+    <Stack>
+           <Stack.Screen name="index" options={{title: 'Dashboard'}} />
       {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
     </Stack>
   );

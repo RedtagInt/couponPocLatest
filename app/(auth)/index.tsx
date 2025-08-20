@@ -5,8 +5,10 @@ import { View, Text, Button, TextInput, StyleSheet } from "react-native";
 import { Modal, SafeAreaView, TouchableOpacity } from 'react-native';
 // import { OTPVerification } from '@msg91comm/react-native-sendotp';
 import { OTPWidget } from '@msg91comm/sendotp-react-native';
-const widgetId = "3568746a614a353031343431";
-const tokenAuth = "420946ToQK9IJX68a59e31P1";
+import {MsgAPiTokenAuth, MsgApWidgetId} from '../../constants/appConstants'
+import { useNavigation } from "@react-navigation/native";
+const widgetId = MsgApWidgetId;
+const tokenAuth = MsgAPiTokenAuth;
 
 export default function SignIn() {
 
@@ -14,73 +16,47 @@ export default function SignIn() {
     OTPWidget.initializeWidget(widgetId, tokenAuth); //Widget initialization
   }, []);
 
-  const [number, setNumber] = useState('');
-
+  let [number, setNumber] = useState('');
+  let [otpRes] = useState('');
+   const navigation: any = useNavigation();
 
   const handleSendOtp = async () => {
     const data = {
       identifier: number
     }
-    console.log(data, number);
+    // console.log(data, number);
     const response = await OTPWidget.sendOTP(data);
-    console.log(response);
+    // console.log(response);
+    if (response && response.type === 'success') {
+      number = '';
+      otpRes = response;
+      navigation.navigate("verify", {otpData: response});  
+    }
   }
-  const { login } = useAuth();
   const router = useRouter();
 
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  const gotodash = () => {
-    router.navigate('/(home)');
-  }
   return (
-
-    // <SafeAreaView style={styles.container}>
-    //   <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-    //     <Text>Login With OTP</Text>
-    //   </TouchableOpacity>
-
-    //   <Modal visible={isModalVisible}>
-    //     <OTPVerification 
-    //       onVisible={isModalVisible} 
-    //       onCompletion={(data) => {
-    //         console.log('otp success', data)                       // Get your response of success/failure.
-    //         setModalVisible(false)
-    //         router.navigate('/(home)');
-    //       }} 
-    //       widgetId={'3568746a614a353031343431'}     // Get widgetId from MSG91 OTP Widget Configuration
-    //       authToken={'420946ToQK9IJX68a59e31P1'}   // Get authToken from MSG91 OTP Tokens
-    //     />
-    //   </Modal>
-    // </SafeAreaView>
-    // <View style={{ flex: 1, alignItems: "center" }}>
-    //   <Text  style={styles.textA}>OTP Verification</Text>
-    //   <Text style={styles.text}>Enter a phone number to send one time password</Text>
-    //   <TextInput style={styles.textinputstyle}></TextInput>
-
-    //   <Button title="Log In" onPress={login} />
-    // </View>
-     <View style={styles.container}>
-            <TextInput
-                placeholder='Number'
-                value={number}
-                keyboardType='numeric'
-                style={{ backgroundColor: '#ededed', margin: 10 }}
-                onChangeText={(text) => {
-                    setNumber(text)
-                }}
-            />
-            <TouchableOpacity
-                style={styles.button}
-                onPress={()=>{
-                    handleSendOtp()
-                }}
-            >
-                <Text>
-                    Send OTP
-                </Text>
-            </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      <TextInput
+        placeholder='Number'
+        value={number}
+        keyboardType='numeric'
+        style={{ backgroundColor: '#ededed', margin: 10 }}
+        onChangeText={(text) => {
+          setNumber(text)
+        }}
+      />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          handleSendOtp()
+        }}
+      >
+        <Text>
+          Send OTP
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 
 }
