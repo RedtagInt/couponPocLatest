@@ -1,101 +1,82 @@
-import { View, Text, Button, StyleSheet } from 'react-native'
+import { View, Button, StyleSheet } from 'react-native'
 import React, { useCallback, useMemo, useRef } from 'react'
 import { useAuth } from '../../contexts/authContext';
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet from '@gorhom/bottom-sheet';
+import CustomBottomsheet from '@/components/CustomBottomsheet';
+import CommonWrapper from '@/components/CommonWrapper';
+import { RadioButton, TextInput , Text} from 'react-native-paper';
+
 
 
 const Index = () => {
+
+  const [isSelected, setIsSelected] = React.useState(false);
   const { isAuthenticated, login, logout } = useAuth();
   const handleLogout = () => {
     logout();
   }
 
-  //   return (
-  // <View>
-  //        <Text>Welocme to Dashboard</Text>
-  //       <Button title='Logout' onPress={handleLogout} /> 
-  // </View>
-  //   )
-
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // define snap points for the bottom sheet
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
-
-  // callback for when the bottom sheet's state changes
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
-
-  // function to open the bottom sheet
   const handlePresentPress = useCallback(() => {
-    bottomSheetRef.current?.expand(); // or .snapToIndex(0) for the first snap point
+    bottomSheetRef.current?.expand();
   }, []);
 
-  // function to close the bottom sheet
   const handleClosePress = useCallback(() => {
     bottomSheetRef.current?.close();
+    setIsSelected(false)
   }, []);
 
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Text style={styles.title}>React Native Bottom Sheet Example</Text>
-        <Button title="Open Bottom Sheet" onPress={handlePresentPress} />
+  const [value, setValue] = React.useState('first');
 
-        <BottomSheet
-          ref={bottomSheetRef}
-          index={-1} // -1 means hidden by default
-          snapPoints={snapPoints}
-          onChange={handleSheetChanges}
-          enablePanDownToClose={true} // allows closing by panning down
-          backgroundStyle={styles.bottomSheetBackground}
-          handleIndicatorStyle={styles.bottomSheetHandleIndicator}
-        >
-          <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
-            <View>
-              <Text style={styles.contentTitle}>Bottom Sheet Content</Text>
-              <Text>This is some example content inside the bottom sheet.</Text>
-              <Text>You can add any components here, like text inputs, buttons, etc.</Text>
-              <Button title="Close Sheet" onPress={handleClosePress} />
-            </View>
-          </BottomSheetScrollView>
-        </BottomSheet>
+  return (
+    <CommonWrapper>
+      <View style={{ flex: 1 }}>
+        <Button title="Open Bottom Sheet" onPress={handlePresentPress} />
+        <Button title="Close Bottom Sheet" onPress={handleClosePress} />
+        <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
+          <View>
+            <Text variant="titleMedium">What do you identify as</Text>
+            <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value}>
+              <View>
+                <Text variant="titleSmall">Male</Text>
+                <RadioButton value="male" />
+              </View>
+              <View>
+                <Text variant="titleSmall">Female</Text>
+                <RadioButton value="female" />
+              </View>
+              <View>
+                <Text variant="titleSmall">Other</Text>
+                <RadioButton value="other" />
+              </View>
+            </RadioButton.Group>
+
+            <Text variant="titleMedium">Enter your birth month and year</Text>
+            <TextInput></TextInput>
+
+            <Text variant="titleMedium">Enter Email ID</Text>
+            <TextInput
+              mode="outlined"
+              label=""
+              placeholder="Enter Email ID"
+              right={<TextInput.Affix text="/100" />}
+            />
+
+            <Text variant="titleMedium">Referral Code (Optional)</Text>
+            <TextInput
+              mode="outlined"
+              label=""
+              placeholder="Referral Code (Optional)"
+              right={<TextInput.Affix text="/100" />}
+            />
+
+          </View>
+        </CustomBottomsheet>
       </View>
-    </GestureHandlerRootView>
+    </CommonWrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  bottomSheetBackground: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-  },
-  bottomSheetHandleIndicator: {
-    backgroundColor: '#cccccc',
-  },
-  contentContainer: {
-    padding: 16,
-  },
-  contentTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-});
 
 
 export default Index
