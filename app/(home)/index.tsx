@@ -1,18 +1,38 @@
 import { View, Button, StyleSheet, SafeAreaView } from 'react-native'
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/authContext';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomBottomsheet from '@/components/CustomBottomsheet';
 import CommonWrapper from '@/components/CommonWrapper';
 import { RadioButton, TextInput, Text } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { UserProfile } from '@/constants/appConstants';
+import { UsermobKey, UserProfile } from '@/constants/appConstants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 const Index = () => {
   const [isSelected, setIsSelected] = React.useState(false);
-  const { isAuthenticated, login, logout, user } = useAuth();
+  const { isAuthenticated, login, logout } = useAuth();
+  const [userMob, setUserMob] = useState('');
+
+
+  useEffect(() => {
+    getUserMob();
+  }, []);
+
+  const getUserMob = async () => {
+    try {
+      const mob = await AsyncStorage.getItem(UsermobKey);
+      if (mob)
+        setUserMob(mob);
+      console.log('user mobile number', mob);
+    } catch (error) {
+
+    }
+
+  }
+
   const handleLogout = () => {
     logout();
   }
@@ -21,7 +41,6 @@ const Index = () => {
 
   const handlePresentPress = useCallback(() => {
     bottomSheetRef.current?.expand();
-    console.log('user', user);
   }, []);
 
   const handleClosePress = useCallback(() => {
@@ -118,8 +137,8 @@ const Index = () => {
       <View style={{ flex: 1 }}>
         <Button title="Open Bottom Sheet" onPress={handlePresentPress} />
         <Button title="Close Bottom Sheet" onPress={handleClosePress} />
-<Button title="Logout" onPress={handleLogout} />
-      <Text>Hello {user?.toString()}</Text>
+        <Button title="Logout" onPress={handleLogout} />
+        <Text>Hello {userMob}</Text>
         <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
           <View>
             <TextInput style={styles.input}
@@ -203,7 +222,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     paddingVertical: 10
   },
-   errorText: {
+  errorText: {
     color: 'red',
     marginBottom: 5,
   },

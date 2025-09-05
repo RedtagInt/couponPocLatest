@@ -4,12 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text } from "@/components/Themed";
+import { TokenKey, UsermobKey } from "@/constants/appConstants";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (mobNumber: any, token: string) => void;
   logout: () => void;
-  user: { number: string } | null;
+  // user: { number: string } | null;
   isLoading: boolean
 }
 
@@ -18,39 +19,17 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
   const router = useRouter();
   const navigation: any = useNavigation();
-
-  // useEffect(() => {
-  //   const loadSession = async () => {
-  //     try {
-  //       const storedToken = await AsyncStorage.getItem('userToken');
-  //       console.log('storetoken before', storedToken);
-  //       if (storedToken) {
-  //         // You might want to validate this token with your backend here
-  //         // For simplicity, we'll assume a valid token means authenticated
-  //         setIsAuthenticated(true);
-  //         // Fetch user data if needed
-  //         // setUser(parsedUserData);
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to load session:', error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   loadSession();
-  // }, []);
 
   useEffect(() => {
     checkAuth();
   }, [])
 
   const checkAuth = async () => {
-    const storedToken = await AsyncStorage.getItem('userToken');
-    console.log('storetoken before', storedToken);
-    if (storedToken) {
+    const storedToken = await AsyncStorage.getItem(TokenKey);
+    const storedMob = await AsyncStorage.getItem(UsermobKey);
+    if (storedToken && storedMob) {
       setIsAuthenticated(true);
     }
     setIsLoading(false);
@@ -59,26 +38,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (mobNumber: any, token: string) => {
     setIsLoading(true);
-    await AsyncStorage.setItem('userToken', token);
+    await AsyncStorage.setItem(TokenKey, token);
+    await AsyncStorage.setItem(UsermobKey, mobNumber);
     setIsAuthenticated(true);
-    setUser(mobNumber);
-    console.log('storetoken at login', token);
-    // const storedToken = await AsyncStorage.getItem('userToken');
-    // console.log('storetoken after login', storedToken);
     setIsLoading(false);
-    // router.replace("/(home)");
   };
 
   const logout = async () => {
-     setIsLoading(true);
-    await AsyncStorage.removeItem('userToken');
+    setIsLoading(true);
+    await AsyncStorage.removeItem(TokenKey);
+    await AsyncStorage.removeItem(UsermobKey);
     setIsAuthenticated(false);
-    setUser(null);
     setIsLoading(false);
-    // router.replace("/(auth)");
   };
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
       {isLoading ? (
         <View>
           <Text>Loading...</Text>

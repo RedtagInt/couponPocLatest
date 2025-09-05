@@ -1,6 +1,9 @@
 export const MsgApWidgetId = "3568746a614a353031343431";
 export const MsgAPiTokenAuth = "420946ToQK9IJX68a59e31P1";
 
+export const TokenKey = 'userToken';
+export const UsermobKey = 'userMob';
+
 
 export interface UserProfile {
     firstName: string;
