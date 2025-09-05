@@ -10,7 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 const widgetId = MsgApWidgetId;
 const tokenAuth = MsgAPiTokenAuth;
 
-export default function SignIn() {
+export default function Signin() {
 
   useEffect(() => {
     OTPWidget.initializeWidget(widgetId, tokenAuth); //Widget initialization
@@ -22,15 +22,16 @@ export default function SignIn() {
 
   const handleSendOtp = async () => {
     const data = {
-      identifier: number
+      identifier: 91 + number
     }
     // console.log(data, number);
     const response = await OTPWidget.sendOTP(data);
-    // console.log(response);
+    console.log(response);
     if (response && response.type === 'success') {
-      number = '';
+      response.number = number;
       otpRes = response;
-      navigation.navigate("verify", {otpData: response});  
+      number = '';
+      navigation.navigate("verify", {otpData: response});
     }
   }
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function SignIn() {
         placeholder='Number'
         value={number}
         keyboardType='numeric'
+        maxLength={10}
         style={{ backgroundColor: '#ededed', margin: 10 }}
         onChangeText={(text) => {
           setNumber(text)

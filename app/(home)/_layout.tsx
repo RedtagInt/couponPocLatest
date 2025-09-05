@@ -3,11 +3,12 @@ import { useAuth } from "@/contexts/authContext";
 import { FontAwesome } from "@expo/vector-icons";
 import { Redirect, Stack } from "expo-router";
 import { Tabs } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 export default function HomeLayout() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
+  console.log('isAuthenticated at home layout', isAuthenticated);
   if (!isAuthenticated) {
-    return <Redirect href="/(auth)" />;
+    return <Redirect href="/(auth)/signin" />;
   }
   return (
     // <Stack>

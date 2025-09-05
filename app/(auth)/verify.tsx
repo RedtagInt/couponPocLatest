@@ -24,9 +24,9 @@ const Verify = () => {
         // console.log('verify response', response);
         if (response && response.type === 'success') {
             // router.navigate('/(home)');
-            console.log('usertoken', response.message)
-            login();
-            router.navigate("/(home)");  
+            // console.log('usertoken', response.message)
+            login(otpReqData.otpData.number, response.message);
+            // router.navigate("/(home)");  
         }
     }
     return (
