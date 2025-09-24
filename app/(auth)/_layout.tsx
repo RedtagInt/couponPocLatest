@@ -10,8 +10,8 @@ export default function AuthLayout() {
     return (
         <Stack>
             {/* Define your stack screens here, or other navigators */}
-            <Stack.Screen name="signin" options={{ title: 'Login' }} />
-            <Stack.Screen name="verify" options={{ title: 'Verify OTP' }} />
+            <Stack.Screen name="signin" options={{ title: 'Login', headerShown: false }} />
+            <Stack.Screen name="verify" options={{ title: 'Verify OTP', headerShown: false }} />
             {/* Add more Stack.Screen components for other routes */}
         </Stack>
     );

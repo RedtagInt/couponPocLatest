@@ -38,12 +38,14 @@ export default function Signin() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Enter Your Mobile Number</Text>
+      <Text style={styles.subtitle}>To log in or join CouponApp</Text>
       <TextInput
-        placeholder='Number'
+        placeholder='Mobile Number'
         value={number}
         keyboardType='numeric'
         maxLength={10}
-        style={{ backgroundColor: '#ededed', margin: 10 }}
+        style={styles.input}
         onChangeText={(text) => {
           setNumber(text)
         }}
@@ -54,10 +56,14 @@ export default function Signin() {
           handleSendOtp()
         }}
       >
-        <Text>
+        <Text style={styles.buttonText}>
           Send OTP
         </Text>
       </TouchableOpacity>
+
+      <Text style={styles.footer}>
+        By continuing you agree to our <Text style={styles.link}>Privacy notice</Text>
+      </Text>
     </View>
   );
 
@@ -66,32 +72,51 @@ export default function Signin() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    padding: 36,
+    backgroundColor: '#000'
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#b9b9b9ff',
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#777',
+    marginBottom: 40,
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    fontSize: 16,
+    marginBottom: 20,
+    fontWeight: '600',
+    textAlignVertical: 'center',
   },
   button: {
-    backgroundColor: '#C0EDD2',
-    borderRadius: 8,
+    backgroundColor: '#FF5A00', // orange like your screenshot
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
-    margin: 14
+    marginBottom: 30,
   },
-  textinputstyle: {
-    height: 40,
-    // width: '80%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-
-  textA: {
+  buttonText: {
+    color: '#fff',
     fontSize: 16,
-    marginBottom: 10,
+    fontWeight: '600',
   },
-
-  text: {
-    fontSize: 16,
-    marginBottom: 10,
+  footer: {
+    fontSize: 12,
+    color: '#777',
+    textAlign: 'center',
+  },
+  link: {
+    color: '#FF5A00',
+    textDecorationLine: 'underline',
   },
 })
