@@ -4,14 +4,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text } from "@/components/Themed";
-import { TokenKey, UsermobKey } from "@/constants/appConstants";
+import { APIEndpoints, TokenKey, UserDataKey, UsermobKey } from "@/constants/appConstants";
+import { fetchData, postData } from "@/services/baseservice";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (mobNumber: any, token: string) => void;
   logout: () => void;
   // user: { number: string } | null;
-  isLoading: boolean
+  isLoading: boolean,
+  userData: any;
+  createUserData: (userData: any) => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -19,6 +22,9 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const [userData, setUserData] = useState(null);
+
   const router = useRouter();
   const navigation: any = useNavigation();
 
@@ -48,11 +54,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     await AsyncStorage.removeItem(TokenKey);
     await AsyncStorage.removeItem(UsermobKey);
+    await AsyncStorage.removeItem(UserDataKey);
+    setUserData(null);
     setIsAuthenticated(false);
     setIsLoading(false);
   };
+
+
+  const createUserData = async (userData: any) => {
+    if (userData) {
+      setUserData(userData);
+      await AsyncStorage.setItem(UserDataKey, JSON.stringify(userData));
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading, userData, createUserData }}>
       {isLoading ? (
         <View>
           <Text>Loading...</Text>

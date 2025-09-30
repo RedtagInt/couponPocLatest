@@ -1,23 +1,21 @@
-import { View, Button, StyleSheet, SafeAreaView } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { View, Button, StyleSheet } from 'react-native'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/authContext';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomBottomsheet from '@/components/CustomBottomsheet';
-import CommonWrapper from '@/components/CommonWrapper';
 import { RadioButton, TextInput, Text } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { APIEndpoints, UsermobKey } from '@/constants/appConstants';
+import { APIEndpoints, UserDataKey, UsermobKey } from '@/constants/appConstants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile } from '@/services/homeservice';
 import { fetchData, postData } from '@/services/baseservice';
 
 
-
 const Index = () => {
   const [isSelected, setIsSelected] = React.useState(false);
-  const { isAuthenticated, login, logout } = useAuth();
   const [userMob, setUserMob] = useState('');
   const [userData, setUserData] = useState(null);
+  const { createUserData } = useAuth();
 
   useEffect(() => {
     getUserMob();
@@ -26,26 +24,19 @@ const Index = () => {
   const getUserMob = async () => {
     const mob = await AsyncStorage.getItem(UsermobKey);
     if (mob) {
-      console.log('user mobile number', mob);
       setUserMob(mob);
       checkUserExist(mob);
-      console.log('userData', JSON.stringify(userData));
     }
   }
 
   const checkUserExist = async (mob: any) => {
     const fetchedData = await fetchData(APIEndpoints.getUser + '/' + mob);
-    console.log('fetcheduser', fetchedData);
-
+    // console.log('fetcheduser', fetchedData);
     if (fetchedData && fetchedData.data && fetchedData.status.code === 200) {
-      setUserData(fetchedData);
+      createUserData(fetchedData.data);
     } else {
       handlePresentPress();
     }
-  }
-
-  const handleLogout = () => {
-    logout();
   }
 
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -62,7 +53,6 @@ const Index = () => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode]: any = useState('date');
   const [show, setShow] = useState(false);
-
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
@@ -133,7 +123,7 @@ const Index = () => {
 
   const addUser = async () => {
     if (validateForm()) {
-      console.log('Form submitted:', formData);
+      // console.log('Form submitted:', formData);
       // Perform further actions like sending data to an API
       const tempObj = {
         mobileNo: Number(userMob),
@@ -143,11 +133,12 @@ const Index = () => {
         birthYear: new Date(formData.dob).getFullYear(),
         gender: Number(formData.gender)
       }
-      console.log('tempObj', tempObj);
+      // console.log('tempObj', tempObj);
       const createdUserdata = await postData(APIEndpoints.addUser, tempObj);
-      console.log('created user', createdUserdata);
+      // console.log('created user', createdUserdata);
 
       if (createdUserdata && createdUserdata.data && createdUserdata.status.code === 200) {
+        await AsyncStorage.setItem(UserDataKey, createdUserdata.data);
         handleClosePress();
       } else {
 
@@ -159,86 +150,82 @@ const Index = () => {
 
 
   return (
-    <CommonWrapper>
-      <View style={{ flex: 1 }}>
-        {/* <Button title="Open Bottom Sheet" onPress={handlePresentPress} /> */}
-        {/* <Button title="Close Bottom Sheet" onPress={handleClosePress} /> */}
-        <Button title="Logout" onPress={handleLogout} />
-        <Button title="Logout" onPress={handleLogout} />
-        <Text>Hello {userMob}</Text>
-        <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
-          <View>
-            <TextInput style={styles.input}
-              mode="outlined"
+    <View style={{ flex: 1 }}>
+      {/* <Button title="Open Bottom Sheet" onPress={handlePresentPress} /> */}
+      {/* <Button title="Close Bottom Sheet" onPress={handleClosePress} /> */}
 
-              label=""
-              placeholder="First Name"
-              onChangeText={text => handleInputChange('firstName', text)}
-            />
-            {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
-            <TextInput style={styles.input}
-              mode="outlined"
-              label=""
-              placeholder="Last Name"
-              onChangeText={text => handleInputChange('lastName', text)}
-            />
-            {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
-            {/* <TextInput style={styles.input}
+      <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
+        <View>
+          <TextInput style={styles.input}
+            mode="outlined"
+
+            label=""
+            placeholder="First Name"
+            onChangeText={text => handleInputChange('firstName', text)}
+          />
+          {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+          <TextInput style={styles.input}
+            mode="outlined"
+            label=""
+            placeholder="Last Name"
+            onChangeText={text => handleInputChange('lastName', text)}
+          />
+          {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+          {/* <TextInput style={styles.input}
               mode="outlined"
               label=""
               placeholder="Mobile No."
               onChangeText={text => handleInputChange('mobileNo', text)}
             /> */}
-            <Text variant="titleMedium">What do you identify as</Text>
-            <RadioButton.Group onValueChange={newValue => handleInputChange('gender', newValue)} value={formData.gender}>
-              <View>
-                <Text variant="titleSmall">Male</Text>
-                <RadioButton value="1" />
-              </View>
-              <View>
-                <Text variant="titleSmall">Female</Text>
-                <RadioButton value="2" />
-              </View>
-              <View>
-                <Text variant="titleSmall">Other</Text>
-                <RadioButton value="3" />
-              </View>
-            </RadioButton.Group>
-            {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
-            <Button onPress={showDatepicker} title="Select Date of Birth!" />
-            {/* <Button onPress={showTimepicker} title="Show time picker!" /> */}
-            {/* <Text>selected: {date.toLocaleString()}</Text> */}
-            {show && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={date}
-                mode={mode}
-                is24Hour={true}
-                onChange={onChange}
-              />
-            )}
-            {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}
-            <Text variant="titleMedium">Enter Email ID</Text>
-            <TextInput style={styles.input}
-              mode="outlined"
-              label=""
-              placeholder="Enter Email ID"
-              onChangeText={text => handleInputChange('email', text)}
+          <Text variant="titleMedium">What do you identify as</Text>
+          <RadioButton.Group onValueChange={newValue => handleInputChange('gender', newValue)} value={formData.gender}>
+            <View>
+              <Text variant="titleSmall">Male</Text>
+              <RadioButton value="1" />
+            </View>
+            <View>
+              <Text variant="titleSmall">Female</Text>
+              <RadioButton value="2" />
+            </View>
+            <View>
+              <Text variant="titleSmall">Other</Text>
+              <RadioButton value="3" />
+            </View>
+          </RadioButton.Group>
+          {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
+          <Button onPress={showDatepicker} title="Select Date of Birth!" />
+          {/* <Button onPress={showTimepicker} title="Show time picker!" /> */}
+          {/* <Text>selected: {date.toLocaleString()}</Text> */}
+          {show && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode={mode}
+              is24Hour={true}
+              onChange={onChange}
             />
-            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-            <Text variant="titleMedium">Referral Code (Optional)</Text>
-            <TextInput style={styles.input}
-              mode="outlined"
-              label=""
-              placeholder="Referral Code (Optional)"
-              onChangeText={text => handleInputChange('referralCode', text)}
-            />
-            {errors.referralCode && <Text style={styles.errorText}>{errors.referralCode}</Text>}
-            <Button onPress={addUser} title="Confirm" />
-          </View>
-        </CustomBottomsheet>
-      </View>
-    </CommonWrapper>
+          )}
+          {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}
+          <Text variant="titleMedium">Enter Email ID</Text>
+          <TextInput style={styles.input}
+            mode="outlined"
+            label=""
+            placeholder="Enter Email ID"
+            onChangeText={text => handleInputChange('email', text)}
+          />
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+          <Text variant="titleMedium">Referral Code (Optional)</Text>
+          <TextInput style={styles.input}
+            mode="outlined"
+            label=""
+            placeholder="Referral Code (Optional)"
+            onChangeText={text => handleInputChange('referralCode', text)}
+          />
+          {errors.referralCode && <Text style={styles.errorText}>{errors.referralCode}</Text>}
+          <Button onPress={addUser} title="Confirm" />
+        </View>
+      </CustomBottomsheet>
+    </View>
   );
 };
 
