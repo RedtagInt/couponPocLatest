@@ -6,8 +6,10 @@ import CustomBottomsheet from '@/components/CustomBottomsheet';
 import CommonWrapper from '@/components/CommonWrapper';
 import { RadioButton, TextInput, Text } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { UsermobKey, UserProfile } from '@/constants/appConstants';
+import { APIEndpoints, UsermobKey } from '@/constants/appConstants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserProfile } from '@/services/homeservice';
+import { fetchData, postData } from '@/services/baseservice';
 
 
 
@@ -15,22 +17,31 @@ const Index = () => {
   const [isSelected, setIsSelected] = React.useState(false);
   const { isAuthenticated, login, logout } = useAuth();
   const [userMob, setUserMob] = useState('');
-
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     getUserMob();
   }, []);
 
   const getUserMob = async () => {
-    try {
-      const mob = await AsyncStorage.getItem(UsermobKey);
-      if (mob)
-        setUserMob(mob);
+    const mob = await AsyncStorage.getItem(UsermobKey);
+    if (mob) {
       console.log('user mobile number', mob);
-    } catch (error) {
-
+      setUserMob(mob);
+      checkUserExist(mob);
+      console.log('userData', JSON.stringify(userData));
     }
+  }
 
+  const checkUserExist = async (mob: any) => {
+    const fetchedData = await fetchData(APIEndpoints.getUser + '/' + mob);
+    console.log('fetcheduser', fetchedData);
+
+    if (fetchedData && fetchedData.data && fetchedData.status.code === 200) {
+      setUserData(fetchedData);
+    } else {
+      handlePresentPress();
+    }
   }
 
   const handleLogout = () => {
@@ -47,8 +58,6 @@ const Index = () => {
     bottomSheetRef.current?.close();
     setIsSelected(false)
   }, []);
-
-  const [value, setValue] = React.useState('first');
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode]: any = useState('date');
@@ -122,10 +131,27 @@ const Index = () => {
     }));
   };
 
-  const addUser = () => {
+  const addUser = async () => {
     if (validateForm()) {
       console.log('Form submitted:', formData);
       // Perform further actions like sending data to an API
+      const tempObj = {
+        mobileNo: Number(userMob),
+        name: formData.firstName + ' ' + formData.lastName,
+        email: formData.email,
+        birthMonth: new Date(formData.dob).getMonth(),
+        birthYear: new Date(formData.dob).getFullYear(),
+        gender: Number(formData.gender)
+      }
+      console.log('tempObj', tempObj);
+      const createdUserdata = await postData(APIEndpoints.addUser, tempObj);
+      console.log('created user', createdUserdata);
+
+      if (createdUserdata && createdUserdata.data && createdUserdata.status.code === 200) {
+        handleClosePress();
+      } else {
+
+      }
     } else {
       console.log('Form has errors.');
     }
@@ -135,8 +161,9 @@ const Index = () => {
   return (
     <CommonWrapper>
       <View style={{ flex: 1 }}>
-        <Button title="Open Bottom Sheet" onPress={handlePresentPress} />
-        <Button title="Close Bottom Sheet" onPress={handleClosePress} />
+        {/* <Button title="Open Bottom Sheet" onPress={handlePresentPress} /> */}
+        {/* <Button title="Close Bottom Sheet" onPress={handleClosePress} /> */}
+        <Button title="Logout" onPress={handleLogout} />
         <Button title="Logout" onPress={handleLogout} />
         <Text>Hello {userMob}</Text>
         <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
@@ -156,12 +183,12 @@ const Index = () => {
               onChangeText={text => handleInputChange('lastName', text)}
             />
             {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
-            <TextInput style={styles.input}
+            {/* <TextInput style={styles.input}
               mode="outlined"
               label=""
               placeholder="Mobile No."
               onChangeText={text => handleInputChange('mobileNo', text)}
-            />
+            /> */}
             <Text variant="titleMedium">What do you identify as</Text>
             <RadioButton.Group onValueChange={newValue => handleInputChange('gender', newValue)} value={formData.gender}>
               <View>

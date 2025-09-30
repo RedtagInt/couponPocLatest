@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, StatusBar, Platform } from 'react-native';
 
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight; // Adjust for iOS status bar height if needed, 20 is a common value
+ const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight; // Adjust for iOS status bar height if needed, 20 is a common value
 
 const CommonWrapper = ({ children }: any) => {
     return (
