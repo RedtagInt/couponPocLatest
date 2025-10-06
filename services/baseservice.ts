@@ -5,13 +5,15 @@ import { BASE_URL } from "@/constants/appConstants";
 
 export const fetchData = async (endpoint: string) => {
   try {
-    console.log('baseurl', `${BASE_URL}/${endpoint}`);
+    // console.log('baseurl', `${BASE_URL}/${endpoint}`);
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       headers: {
         'Authorization': "Basic Y21wQWRtaW46Y21wI2FkbWluJDEyMw=="
       }
     });
     const data = await response.json();
+    if(response)
+      console.log('response', data);
     if (!response.ok) {
       handleResponseErrors(response, data);
       // throw new Error(`HTTP error! status: ${response.status}`);
@@ -51,7 +53,7 @@ export const postData = async (endpoint: string, payload: any) => {
 // You can add more functions for PUT, DELETE, etc.
 
 const handleResponseErrors = (response: any, data: any) => {
-  console.log(JSON.stringify(response.status));
+  // console.log(JSON.stringify(response.status));
   if (response.status === 404 || response.status === 409) {
     alert(data.status.message);
   }

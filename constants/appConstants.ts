@@ -11,7 +11,9 @@ export const BASE_URL = ApiBaseUrl + APIUrlPath;
 
 export const APIEndpoints = {
     getUser: 'user/getUser',
-    addUser: 'user/addUser'
+    addUser: 'user/addUser',
+    getAllCategories: 'user/getAllCategories',
+    getAllStores: 'user/getAllStores'
 }
 
 

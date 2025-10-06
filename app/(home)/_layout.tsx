@@ -29,7 +29,7 @@ export default function HomeLayout() {
           }}
         />
         <Tabs.Screen
-          name="(shop)/index" // Matches app/(tabs)/profile.tsx
+          name="(shop)" // Matches app/(tabs)/profile.tsx
           options={{
             title: 'Shop',
             tabBarIcon: ({ color }) => <FontAwesome size={28} name="shopping-cart" color={color} />,
