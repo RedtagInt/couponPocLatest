@@ -1,14 +1,16 @@
-import { View, Button, StyleSheet } from 'react-native'
+import { View, Button, StyleSheet, Pressable, TextInput, Text } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/authContext';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomBottomsheet from '@/components/CustomBottomsheet';
-import { RadioButton, TextInput, Text } from 'react-native-paper';
+import { RadioButton } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { APIEndpoints, UserDataKey, UsermobKey } from '@/constants/appConstants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile } from '@/services/homeservice';
 import { fetchData, postData } from '@/services/baseservice';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import type { ComponentProps } from "react";
 
 
 const Index = () => {
@@ -148,6 +150,12 @@ const Index = () => {
     }
   }
 
+  type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
+  const genderOptions: { label: string; value: string; icon: IconName }[] = [
+    { label: "Male", value: "1", icon: "gender-male" },
+    { label: "Female", value: "2", icon: "gender-female" },
+    { label: "Other", value: "3", icon: "gender-transgender" },
+  ];
 
   return (
     <View style={{ flex: 1 }}>
@@ -156,42 +164,63 @@ const Index = () => {
 
       <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
         <View>
-          <TextInput style={styles.input}
-            mode="outlined"
-
-            label=""
-            placeholder="First Name"
-            onChangeText={text => handleInputChange('firstName', text)}
-          />
-          {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
-          <TextInput style={styles.input}
-            mode="outlined"
-            label=""
-            placeholder="Last Name"
-            onChangeText={text => handleInputChange('lastName', text)}
-          />
-          {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+          <View className="flex-row gap-4"> 
+            <View className="flex-1">
+              <Text className="text-lg font-bold text-black mb-2">First Name</Text>
+              <TextInput style={styles.input}
+                placeholder=""
+                className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
+                onChangeText={text => handleInputChange('firstName', text)}
+              />
+              {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+            </View>
+            <View className="flex-1">
+              <Text className="text-lg font-bold text-black mb-2">Last Name</Text>
+              <TextInput style={styles.input}
+                placeholder=""
+                className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
+                onChangeText={text => handleInputChange('lastName', text)}
+              />
+              {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+            </View>
+          </View>
           {/* <TextInput style={styles.input}
               mode="outlined"
               label=""
               placeholder="Mobile No."
               onChangeText={text => handleInputChange('mobileNo', text)}
             /> */}
-          <Text variant="titleMedium">What do you identify as</Text>
-          <RadioButton.Group onValueChange={newValue => handleInputChange('gender', newValue)} value={formData.gender}>
-            <View>
-              <Text variant="titleSmall">Male</Text>
-              <RadioButton value="1" />
-            </View>
-            <View>
-              <Text variant="titleSmall">Female</Text>
-              <RadioButton value="2" />
-            </View>
-            <View>
-              <Text variant="titleSmall">Other</Text>
-              <RadioButton value="3" />
-            </View>
-          </RadioButton.Group>
+          <Text className="text-lg font-bold text-black mb-2 mt-4">What do you identify as</Text>
+          <View className="flex-row gap-3 mb-4">
+            {[
+              { label: "Male", value: "1", icon: "gender-male" },
+              { label: "Female", value: "2", icon: "gender-female" },
+              { label: "Other", value: "3", icon: "gender-transgender" },
+            ].map((item) => {
+              const selected = formData.gender === item.value;
+              return (
+                <Pressable
+                  key={item.value}
+                  onPress={() => handleInputChange("gender", item.value)}
+                  className={`flex-1 flex-row items-center justify-center py-3 rounded-lg border 
+                    ${selected ? "bg-indigo-600 border-blue-600" : "bg-white border-gray-300"}`}
+                >
+                  <MaterialCommunityIcons
+                    name={item.icon as ComponentProps<typeof MaterialCommunityIcons>["name"]}
+                    size={24}
+                    color={selected ? "white" : "black"}
+                  />
+                  <Text
+                    className={`font-medium text-lg ml-2 ${
+                      selected ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {item.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
           {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
           <Button onPress={showDatepicker} title="Select Date of Birth!" />
           {/* <Button onPress={showTimepicker} title="Show time picker!" /> */}
@@ -206,23 +235,28 @@ const Index = () => {
             />
           )}
           {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}
-          <Text variant="titleMedium">Enter Email ID</Text>
+          <Text className="text-lg font-bold text-black mb-2 mt-4">Enter Email ID</Text>
           <TextInput style={styles.input}
-            mode="outlined"
-            label=""
+            // mode="outlined"
+            // label=""
             placeholder="Enter Email ID"
+            className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
             onChangeText={text => handleInputChange('email', text)}
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-          <Text variant="titleMedium">Referral Code (Optional)</Text>
+          <Text className="text-lg font-bold text-black mb-2 mt-4">Referral Code (Optional)</Text>
           <TextInput style={styles.input}
-            mode="outlined"
-            label=""
+            // mode="outlined"
+            // label=""
             placeholder="Referral Code (Optional)"
+            className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
             onChangeText={text => handleInputChange('referralCode', text)}
           />
           {errors.referralCode && <Text style={styles.errorText}>{errors.referralCode}</Text>}
-          <Button onPress={addUser} title="Confirm" />
+          {/* <Button onPress={addUser} title="Confirm" /> */}
+          <Pressable className="bg-indigo-600 p-3 rounded-md mt-6" onPress={addUser}>
+            <Text className="text-white text-center font-bold uppercase text-lg">Confirm</Text>
+          </Pressable>
         </View>
       </CustomBottomsheet>
     </View>
@@ -231,10 +265,10 @@ const Index = () => {
 
 const styles = StyleSheet.create({
   input: {
-    height: 25, // Fixed height of 40 points
-    width: 200,  // Fixed width of 200 points
-    paddingHorizontal: 2,
-    paddingVertical: 10
+    // height: 25,
+    // width: 200,
+    // paddingHorizontal: 2,
+    // paddingVertical: 10
   },
   errorText: {
     color: 'red',
