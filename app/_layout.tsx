@@ -1,4 +1,4 @@
-
+import "./global.css"
 import { AuthProvider } from "@/contexts/authContext";
 import { Stack } from "expo-router";
 import { Header } from "react-native/Libraries/NewAppScreen";

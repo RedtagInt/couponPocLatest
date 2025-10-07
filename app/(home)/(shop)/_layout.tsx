@@ -46,12 +46,15 @@ const styles = StyleSheet.create({
     tabList: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        backgroundColor: '#f0f0f0',
-        paddingVertical: 10,
+        backgroundColor: '#ffffff',
+        paddingVertical: 0,
+        borderBottomWidth: 2,
+        borderBottomColor: 'gray',
+
     },
     tabTriggerBtn: {
         width: '50%',
-        padding: 10
+        // padding: 10
     },
     tabButton: {
         width: '100%',
@@ -59,11 +62,18 @@ const styles = StyleSheet.create({
         // paddingVertical: 8,
         // borderRadius: 5,
          flexDirection: 'row',
-         textAlign: 'center'
+         textAlign: 'center',
+         fontSize: 16,
+         paddingVertical: 10
     },
     activeTabButton: {
-        backgroundColor: 'red',
-         textAlign: 'center' // Example active background color
+        backgroundColor: 'white',
+        textAlign: 'center', // Example active background color
+        fontSize: 16,
+        color: 'blue',
+        borderBottomWidth: 2,
+        borderBottomColor: 'blue',
+        paddingVertical: 10
     },
     tabText: {
         fontSize: 16,
