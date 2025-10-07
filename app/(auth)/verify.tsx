@@ -31,7 +31,8 @@ const Verify = () => {
     }
     return (
         <View style={styles.container}>
-            <OtpInput numberOfDigits={4} onFilled={(text) => handleVerifyOtp(text)} />
+            <Text style={styles.title}>Verify OTP</Text>
+            <OtpInput numberOfDigits={4} focusColor="orange" onFilled={(text) => handleVerifyOtp(text)} theme={{ pinCodeTextStyle: styles.Text, }} />
         </View>
     )
 }
@@ -39,7 +40,18 @@ const Verify = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        padding: 36,
+        backgroundColor: '#000'
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: '700',
+        color: '#b9b9b9ff',
+        marginBottom: 36,
+    },
+    Text: {
+        color: '#fff'
     }
 });
 
