@@ -164,7 +164,7 @@ const Index = () => {
 
       <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
         <View>
-          <View className="flex-row gap-4"> 
+          <View className="flex-row gap-4">
             <View className="flex-1">
               <Text className="text-lg font-bold text-black mb-2">First Name</Text>
               <TextInput style={styles.input}
@@ -211,9 +211,8 @@ const Index = () => {
                     color={selected ? "white" : "black"}
                   />
                   <Text
-                    className={`font-medium text-lg ml-2 ${
-                      selected ? "text-white" : "text-gray-900"
-                    }`}
+                    className={`font-medium text-lg ml-2 ${selected ? "text-white" : "text-gray-900"
+                      }`}
                   >
                     {item.label}
                   </Text>

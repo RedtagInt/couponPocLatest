@@ -1,34 +1,101 @@
-import { View, Text, SafeAreaView, TouchableOpacity, Image, FlatList, TextInput, ScrollView } from 'react-native';
-import React from 'react';
+import {
+  View, Text, SafeAreaView, TouchableOpacity, Image, FlatList, TextInput, ScrollView, ActivityIndicator,
+  StyleSheet,
+  Button
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { Ionicons } from "@expo/vector-icons";
+import { fetchData } from '@/services/baseservice';
+import { APIEndpoints } from '@/constants/appConstants';
+import { WebView } from 'react-native-webview';
 
-const brands = () => {
-  const trendingBrands = [
-    { id: 1, name: "DOT & KEY", image: "https://images.savingaround.com/Logo/dot%20and%20key%20logo.png" },
-    { id: 2, name: "Just Herbs", image: "https://media.publit.io/file/fil-q0o.png" },
-    { id: 3, name: "Mamaearth", image: "https://media.publit.io/file/fil-w8Z.png" },
-    { id: 4, name: "Cashify.", image: "https://media.publit.io/file/fil-ler.png" },
-  ];
+const brands = ({ navigation }: any) => {
 
-  const brandList = [
-    { id: 1, name: "4700BC", trials: "5 Trials", image: "https://via.placeholder.com/80" },
-    { id: 2, name: "52 Sundaze", trials: "2 Trials", image: "https://via.placeholder.com/80" },
-    { id: 3, name: "Aaranyaa", trials: "3 Trials", image: "https://via.placeholder.com/80" },
-    { id: 4, name: "Aigner", trials: "1 Trial", image: "https://via.placeholder.com/80" },
-    { id: 5, name: "AndStirred", trials: "1 Trial", image: "https://via.placeholder.com/80" },
-    { id: 6, name: "Aqualogica", trials: "4 Trials", image: "https://via.placeholder.com/80" },
-  ];
+  const [brandList, setAllBrands] = useState<any[]>([]);
+  const [trendingBrands, setTrendingBrands] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showWebView, setShowWebView] = useState(false);
 
+  useEffect(() => {
+    getBrands();
+  }, []);
   const alphabetButtons = ["A-D", "E-H", "I-L", "M-P", "Q-T", "U-Z"];
 
+  const getBrands = async () => {
+    try {
+      setLoading(true);
+      const brandList = await fetchData(APIEndpoints.getAllStores);
+      console.log('brandList', brandList);
+      if (brandList && brandList.data && brandList.status.code === 200) {
+        // createUserData(fetchedData.data);
+        setAllBrands(brandList.data?.allStores);
+        setTrendingBrands(brandList.data?.popularStores)
+      }
+    } catch (err) {
+      console.error("Failed to fetch brandList", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenWebView = () => {
+    console.log('clicked');
+    setShowWebView(true);
+  };
+
+  const handleCloseWebView = () => {
+    setShowWebView(false);
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
   return (
+
     <SafeAreaView className="flex-1 bg-white">
+      {!showWebView ? (
+        <Button title="Open WebView" onPress={handleOpenWebView} />
+      ) : (
+        <>
+          <WebView
+            source={{ uri: 'https://www.google.com' }} // Replace with your desired URL
+            style={styles.webview}
+            onNavigationStateChange={(navState) => {
+              // Optional: Handle navigation changes within the WebView
+              console.log('WebView navigation state:', navState);
+            }}
+          />
+          <Button title="Close WebView" onPress={handleCloseWebView} />
+        </>
+      )}
       {/* Header */}
       <View className="flex-row items-center px-4 py-3">
-        <TouchableOpacity className="p-2">
+        <TouchableOpacity className="p-2" onPress={() => navigation?.goBack?.()}>
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
         <Text className="text-xl font-bold ml-2">Explore Products</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        {!showWebView ? (
+          <Button title="Open WebView" onPress={handleOpenWebView} />
+        ) : (
+          <>
+            <WebView
+              source={{ uri: 'https://www.example.com' }} // Replace with your desired URL
+              style={styles.webview}
+              onNavigationStateChange={(navState) => {
+                // Optional: Handle navigation changes within the WebView
+                console.log('WebView navigation state:', navState);
+              }}
+            />
+            <Button title="Close WebView" onPress={handleCloseWebView} />
+          </>
+        )}
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -38,13 +105,13 @@ const brands = () => {
           <FlatList
             horizontal
             data={trendingBrands}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
               <View className="mr-3 items-center">
                 <View className="w-28 h-28 bg-white rounded-2xl overflow-hidden shadow">
-                  <Image source={{ uri: item.image }} className="w-full h-full" resizeMode="cover" />
+                  <Image source={{ uri: item?.logoImage?.url }} className="w-full h-full" resizeMode="cover" />
                 </View>
-                <Text className="mt-2 font-medium text-sm">{item.name}</Text>
+                <Text className="mt-2 font-medium text-sm">{item?.storeName}</Text>
               </View>
             )}
             showsHorizontalScrollIndicator={false}
@@ -77,30 +144,48 @@ const brands = () => {
 
         {/* Brand List */}
         <View className="mt-5">
-          <Text className="px-4 text-lg font-semibold mb-2">#</Text>
-          {brandList.map((item) => (
+          <Text className="px-4 text-lg font-semibold mb-2" onPress={handleOpenWebView}>#</Text>
+          {brandList?.map((item) => (
             <View
-              key={item.id}
+              key={item._id}
               className="flex-row items-center px-4 py-3 border-b border-gray-100"
+
             >
               <View className="w-12 h-12 rounded-lg bg-gray-50 items-center justify-center mr-4 overflow-hidden border">
                 <Image
-                  source={{ uri: item.image }}
+                  source={{ uri: item?.logoImage?.url }}
                   className="w-10 h-10"
                   resizeMode="contain"
                 />
               </View>
               <View className="flex-1">
-                <Text className="text-base font-medium">{item.name}</Text>
-                <Text className="text-gray-500 text-sm">{item.trials}</Text>
+                <Text className="text-base font-medium">{item?.storeName}</Text>
+                <Text className="text-gray-500 text-sm">{item?.profitPer}</Text>
               </View>
               <Ionicons name="chevron-forward" size={22} color="#0b1220" />
+
             </View>
           ))}
+
         </View>
+
       </ScrollView>
+
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // paddingTop: 50, // Adjust as needed
+  },
+  webview: {
+    flex: 1,
+    width: '100%',
+  },
+});
 
 export default brands

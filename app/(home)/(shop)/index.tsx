@@ -14,6 +14,8 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { fetchData } from "@/services/baseservice";
+import { APIEndpoints } from "@/constants/appConstants";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const FALLBACK_IMG = "https://img.icons8.com/ios-filled/100/backpack.png";
@@ -56,17 +58,14 @@ export default function CategoriesScreen({ navigation }: any) {
   const getCategories = async () => {
     try {
       setLoading(true);
-      const categories = [
-        { id: "1", name: "Accessories", offers: 234, image: FALLBACK_IMG, bgColorClass: "bg-yellow-100", subcategories: [
-          { id: "s1", name: "All", image: FALLBACK_IMG },
-          { id: "s2", name: "Bags", image: FALLBACK_IMG },
-          { id: "s3", name: "Travel Accessories", image: FALLBACK_IMG },
-        ] },
-        { id: "2", name: "Skincare", offers: 233, image: FALLBACK_IMG, bgColorClass: "bg-orange-100", subcategories: [] },
-        { id: "3", name: "Makeup", offers: 84, image: FALLBACK_IMG, bgColorClass: "bg-pink-100", subcategories: [] },
-        { id: "4", name: "Food & Beverages", offers: 98, image: FALLBACK_IMG, bgColorClass: "bg-yellow-200", subcategories: [] },
-      ];
-      setAllCategories(categories);
+      const categories = await fetchData(APIEndpoints.getAllCategories);
+      // console.log('fetcheduser', fetchedData);
+      if (categories && categories.data && categories.status.code === 200) {
+        // createUserData(fetchedData.data);
+        setAllCategories(categories.data);
+      } else {
+      }
+      // setAllCategories(categories);
     } catch (err) {
       console.error("Failed to fetch categories", err);
     } finally {
@@ -94,10 +93,10 @@ export default function CategoriesScreen({ navigation }: any) {
       >
         <View className="flex-row justify-between items-start">
           <View style={{ flex: 1 }}>
-            <Text className="text-lg font-semibold text-black">{item.name}</Text>
+            <Text className="text-lg font-semibold text-black">{item.categoryName}</Text>
             <Text className="text-sm text-gray-600 mt-1">{item.offers ?? 0} Offers</Text>
           </View>
-          
+
         </View>
         <View>
           <Image source={{ uri: imageUri }} className="w-16 h-16 ml-auto" resizeMode="contain" />
@@ -145,13 +144,13 @@ export default function CategoriesScreen({ navigation }: any) {
         <Text className="text-xl font-bold ml-2">Explore Products</Text>
       </View>
 
-      
+
 
       {/* Grid */}
       <FlatList
         data={allCategories}
         renderItem={categoryCard}
-        keyExtractor={(i) => String(i.id)}
+        keyExtractor={(i) => String(i._id)}
         numColumns={2}
         contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 0, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
@@ -162,33 +161,31 @@ export default function CategoriesScreen({ navigation }: any) {
         )}
       />
 
-      
+
       {sheetOpen && (
         <TouchableWithoutFeedback onPress={closeSheet}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
       )}
 
-      
-      <Animated.View
+
+      {/* <Animated.View
         pointerEvents={sheetOpen ? "auto" : "none"}
         style={[
           styles.sheetContainer,
           {
             transform: [{ translateY: sheetTranslateY }],
-            // optional: ensure sheet is above overlay/content
             elevation: 20,
             zIndex: 1000,
           },
         ]}
       >
         <View className="bg-white rounded-t-3xl overflow-hidden" style={{ flex: 1 }}>
-          {/* drag indicator */}
+        
           <View className="items-center pt-3 pb-1">
             <View className="w-12 h-1 rounded-full bg-gray-300" />
           </View>
 
-          {/* Header */}
           <View className="flex-row items-center justify-between px-5 py-3 border-b border-gray-200">
             <Text className="text-2xl font-semibold">{selectedCategory?.name ?? "Category"}</Text>
             <TouchableOpacity onPress={closeSheet} className="p-1">
@@ -196,10 +193,10 @@ export default function CategoriesScreen({ navigation }: any) {
             </TouchableOpacity>
           </View>
 
-          {/* Subcategories list */}
+        
           <FlatList
             data={selectedCategory?.subcategories ?? []}
-            keyExtractor={(i: any) => String(i.id)}
+            keyExtractor={(i: any) => String(i._id)}
             renderItem={subItem}
             ItemSeparatorComponent={() => <View className="h-px bg-gray-200 ml-20" />}
             showsVerticalScrollIndicator={false}
@@ -211,7 +208,7 @@ export default function CategoriesScreen({ navigation }: any) {
             )}
           />
         </View>
-      </Animated.View>
+      </Animated.View> */}
     </SafeAreaView>
   );
 }

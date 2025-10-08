@@ -1,5 +1,5 @@
 import { BASE_URL } from "@/constants/appConstants";
-
+import { Button, Alert } from 'react-native';
 
 
 
@@ -13,7 +13,7 @@ export const fetchData = async (endpoint: string) => {
     });
     const data = await response.json();
     if(response)
-      console.log('response', data);
+      // console.log('response', data);
     if (!response.ok) {
       handleResponseErrors(response, data);
       // throw new Error(`HTTP error! status: ${response.status}`);
