@@ -7,14 +7,16 @@ import React, { useEffect, useState } from 'react';
 import { Ionicons } from "@expo/vector-icons";
 import { fetchData } from '@/services/baseservice';
 import { APIEndpoints } from '@/constants/appConstants';
-import { WebView } from 'react-native-webview';
+import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 const brands = ({ navigation }: any) => {
 
+  const navigationNative: any = useNavigation();
+const router = useRouter();
   const [brandList, setAllBrands] = useState<any[]>([]);
   const [trendingBrands, setTrendingBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showWebView, setShowWebView] = useState(false);
 
   useEffect(() => {
     getBrands();
@@ -38,14 +40,14 @@ const brands = ({ navigation }: any) => {
     }
   };
 
-  const handleOpenWebView = () => {
-    console.log('clicked');
-    setShowWebView(true);
-  };
+  const openWebView = (affiliateLink: string) => {
+    // console.log('navigation', navigationNative);
+    // const abcd = `webview/${affiliateLink}`;
+    navigationNative.navigate('webview/[url]', {url: affiliateLink});
+    // console.log(abcd);
+  //  router.push(abcd);
+  }
 
-  const handleCloseWebView = () => {
-    setShowWebView(false);
-  };
 
   if (loading) {
     return (
@@ -58,21 +60,7 @@ const brands = ({ navigation }: any) => {
   return (
 
     <SafeAreaView className="flex-1 bg-white">
-      {!showWebView ? (
-        <Button title="Open WebView" onPress={handleOpenWebView} />
-      ) : (
-        <>
-          <WebView
-            source={{ uri: 'https://www.google.com' }} // Replace with your desired URL
-            style={styles.webview}
-            onNavigationStateChange={(navState) => {
-              // Optional: Handle navigation changes within the WebView
-              console.log('WebView navigation state:', navState);
-            }}
-          />
-          <Button title="Close WebView" onPress={handleCloseWebView} />
-        </>
-      )}
+
       {/* Header */}
       <View className="flex-row items-center px-4 py-3">
         <TouchableOpacity className="p-2" onPress={() => navigation?.goBack?.()}>
@@ -80,23 +68,7 @@ const brands = ({ navigation }: any) => {
         </TouchableOpacity>
         <Text className="text-xl font-bold ml-2">Explore Products</Text>
       </View>
-      <View style={{ flex: 1 }}>
-        {!showWebView ? (
-          <Button title="Open WebView" onPress={handleOpenWebView} />
-        ) : (
-          <>
-            <WebView
-              source={{ uri: 'https://www.example.com' }} // Replace with your desired URL
-              style={styles.webview}
-              onNavigationStateChange={(navState) => {
-                // Optional: Handle navigation changes within the WebView
-                console.log('WebView navigation state:', navState);
-              }}
-            />
-            <Button title="Close WebView" onPress={handleCloseWebView} />
-          </>
-        )}
-      </View>
+
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Trending Brands */}
@@ -143,32 +115,35 @@ const brands = ({ navigation }: any) => {
         </View>
 
         {/* Brand List */}
+
         <View className="mt-5">
-          <Text className="px-4 text-lg font-semibold mb-2" onPress={handleOpenWebView}>#</Text>
+          <Text className="px-4 text-lg font-semibold mb-2">#</Text>
           {brandList?.map((item) => (
+
             <View
               key={item._id}
               className="flex-row items-center px-4 py-3 border-b border-gray-100"
 
             >
-              <View className="w-12 h-12 rounded-lg bg-gray-50 items-center justify-center mr-4 overflow-hidden border">
-                <Image
-                  source={{ uri: item?.logoImage?.url }}
-                  className="w-10 h-10"
-                  resizeMode="contain"
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-medium">{item?.storeName}</Text>
-                <Text className="text-gray-500 text-sm">{item?.profitPer}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={22} color="#0b1220" />
-
+              <TouchableOpacity onPress={() => openWebView(item.affiliateLink)}>
+                <View className="w-12 h-12 rounded-lg bg-gray-50 items-center justify-center mr-4 overflow-hidden border">
+                  <Image
+                    source={{ uri: item?.logoImage?.url }}
+                    className="w-10 h-10"
+                    resizeMode="contain"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-base font-medium">{item?.storeName}</Text>
+                  <Text className="text-gray-500 text-sm">{item?.profitPer}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={22} color="#0b1220" />
+              </TouchableOpacity>
             </View>
+
           ))}
 
         </View>
-
       </ScrollView>
 
     </SafeAreaView>
@@ -181,11 +156,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
     // paddingTop: 50, // Adjust as needed
-  },
-  webview: {
-    flex: 1,
-    width: '100%',
-  },
+  }
 });
 
 export default brands

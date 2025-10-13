@@ -7,7 +7,7 @@ const _layout = () => {
     const pathname = usePathname();
 
     const isTabActive = (tabPath: string) => {
-        console.log('tabpath', tabPath, pathname);
+        // console.log('tabpath', tabPath, pathname);
         return pathname === tabPath;
     };
     return (

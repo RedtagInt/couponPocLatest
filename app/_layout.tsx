@@ -12,6 +12,7 @@ export default function RootLayout() {
         ),  
        }}>
         <Stack.Screen name="(home)"  options={{ headerShown: false }}/>
+         <Stack.Screen name="webview/[url]" options={{ headerShown: false }}/>
       </Stack>
     </AuthProvider>
   );
