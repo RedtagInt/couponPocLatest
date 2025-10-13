@@ -1,7 +1,9 @@
 // WebViewScreen.js
+import CustomBottomsheet from '@/components/CustomBottomsheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import React, { useCallback, useRef } from 'react';
+import { StyleSheet, SafeAreaView, View, Button } from 'react-native';
 import WebView from 'react-native-webview';
 
 const WebViewScreen = ({ route }: any) => {
@@ -9,8 +11,19 @@ const WebViewScreen = ({ route }: any) => {
   const { url } = useLocalSearchParams<{ url: string }>();
   const webviewUrl = url ? url : 'https://www.google.com';
   console.log('url', url);
-  // const { uri } = route?.params;
-  // console.log('at webview', route?.params);
+  
+   const [isSelected, setIsSelected] = React.useState(false);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const handlePresentPress = useCallback(() => {
+    bottomSheetRef.current?.expand();
+  }, []);
+
+  const handleClosePress = useCallback(() => {
+    bottomSheetRef.current?.close();
+    setIsSelected(false)
+  }, []);
+  
   return (
     <SafeAreaView style={styles.container}>
       <WebView
@@ -19,6 +32,13 @@ const WebViewScreen = ({ route }: any) => {
         // Optional: Add a loading indicator while the page loads
         startInLoadingState={true}
       />
+      <Button
+        title="Press Me"
+        onPress={handlePresentPress} // Attach the function to the onPress prop
+      />
+      <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
+         <View></View>
+      </CustomBottomsheet>
     </SafeAreaView>
   );
 };
