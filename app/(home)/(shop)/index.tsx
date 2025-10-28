@@ -16,6 +16,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { fetchData } from "@/services/baseservice";
 import { APIEndpoints } from "@/constants/appConstants";
+import CustomBottomsheet from "@/components/CustomBottomsheet";
+import BottomSheet from "@gorhom/bottom-sheet";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const FALLBACK_IMG = "https://img.icons8.com/ios-filled/100/backpack.png";
@@ -23,7 +25,7 @@ const FALLBACK_IMG = "https://img.icons8.com/ios-filled/100/backpack.png";
 export default function CategoriesScreen({ navigation }: any) {
   const [allCategories, setAllCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<any | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<any>([]);
 
   // control "sheet open" state
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -31,29 +33,16 @@ export default function CategoriesScreen({ navigation }: any) {
   // Animated value for translateY of sheet
   const sheetTranslateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
   useEffect(() => {
     getCategories();
   }, []);
 
   // When sheetOpen changes, animate sheet up/down
   useEffect(() => {
-    if (sheetOpen) {
-      Animated.timing(sheetTranslateY, {
-        toValue: 0,
-        duration: 320,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(sheetTranslateY, {
-        toValue: SCREEN_HEIGHT,
-        duration: 260,
-        useNativeDriver: true,
-      }).start(() => {
-        // optional: clear selectedCategory after animation completes
-        setSelectedCategory(null);
-      });
-    }
-  }, [sheetOpen, sheetTranslateY]);
+
+  });
 
   const getCategories = async () => {
     try {
@@ -73,13 +62,35 @@ export default function CategoriesScreen({ navigation }: any) {
     }
   };
 
+  const getCategory = async (cat: any) => {
+    try {
+      setLoading(true);
+      const category = await fetchData(APIEndpoints.getCategory + '/' + cat._id);
+      console.log('category', category);
+      if (category && category.data && category.status.code === 200) {
+        // createUserData(fetchedData.data);
+
+        setSelectedCategory(category.data.length ? category.data : []);
+
+        // bottomSheetRef.current?.expand();
+      } else {
+      }
+      // setAllCategories(categories);
+    } catch (err) {
+      console.error("Failed to fetch categories", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   function openCategory(cat: any) {
-    setSelectedCategory(cat);
-    setSheetOpen(true);
+    getCategory(cat);
+    bottomSheetRef.current?.expand();
+    // setSheetOpen(true);
   }
 
   function closeSheet() {
-    setSheetOpen(false);
+    // setSheetOpen(false);
   }
 
   const categoryCard = ({ item }: { item: any }) => {
@@ -112,14 +123,14 @@ export default function CategoriesScreen({ navigation }: any) {
         className="flex-row items-center px-4 py-5 bg-white"
         activeOpacity={0.7}
         onPress={() => {
-          console.log("Subcategory tapped:", item.name);
+          console.log("Subcategory tapped:", item.categoryName);
         }}
       >
         <View className="w-12 h-12 rounded-full bg-[#f4e9d8] items-center justify-center mr-4 overflow-hidden">
           <Image source={{ uri: imageUri }} className="w-10 h-10" resizeMode="contain" />
         </View>
 
-        <Text className="flex-1 text-lg font-medium text-black">{item.name}</Text>
+        <Text className="flex-1 text-lg font-medium text-black">{item.categoryName}</Text>
 
         <Ionicons name="chevron-forward" size={22} color="#0b1220" />
       </TouchableOpacity>
@@ -162,11 +173,46 @@ export default function CategoriesScreen({ navigation }: any) {
       />
 
 
-      {sheetOpen && (
+      {/* {sheetOpen && (
         <TouchableWithoutFeedback onPress={closeSheet}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
-      )}
+      )} */}
+
+
+      <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'
+        onChange={() => { }}>
+        <View>
+          <View className="bg-white rounded-t-3xl overflow-hidden" style={{ flex: 1 }}>
+
+            <View className="items-center pt-3 pb-1">
+              <View className="w-12 h-1 rounded-full bg-gray-300" />
+            </View>
+
+            <View className="flex-row items-center justify-between px-5 py-3 border-b border-gray-200">
+              <Text className="text-2xl font-semibold">{selectedCategory?.name ?? "Category"}</Text>
+              <TouchableOpacity onPress={closeSheet} className="p-1">
+                <Ionicons name="close" size={28} color="#0b1220" />
+              </TouchableOpacity>
+            </View>
+
+
+            <FlatList
+              data={selectedCategory}
+              keyExtractor={(i: any) => String(i._id)}
+              renderItem={subItem}
+              ItemSeparatorComponent={() => <View className="h-px bg-gray-200 ml-20" />}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 40 }}
+              ListEmptyComponent={() => (
+                <View className="py-8 px-4">
+                  <Text className="text-gray-500">No subcategories available.</Text>
+                </View>
+              )}
+            />
+          </View>
+        </View>
+      </CustomBottomsheet>
 
 
       {/* <Animated.View

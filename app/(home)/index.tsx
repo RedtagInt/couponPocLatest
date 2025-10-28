@@ -162,7 +162,8 @@ const Index = () => {
       {/* <Button title="Open Bottom Sheet" onPress={handlePresentPress} /> */}
       {/* <Button title="Close Bottom Sheet" onPress={handleClosePress} /> */}
 
-      <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'>
+      <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'
+       onChange={() => {}}>
         <View>
           <View className="flex-row gap-4">
             <View className="flex-1">

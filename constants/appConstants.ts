@@ -13,6 +13,7 @@ export const APIEndpoints = {
     getUser: 'user/getUser',
     addUser: 'user/addUser',
     getAllCategories: 'user/getAllCategories',
+    getCategory: 'user/getCategory',
     getAllStores: 'user/getAllStores',
     getStore: 'user/getStore'
 }
