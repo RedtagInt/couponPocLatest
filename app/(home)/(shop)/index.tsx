@@ -84,7 +84,7 @@ export default function CategoriesScreen({ navigation }: any) {
   };
 
   function openCategory(cat: any) {
-    getCategory(cat);
+    // getCategory(cat);
     bottomSheetRef.current?.expand();
     // setSheetOpen(true);
   }
