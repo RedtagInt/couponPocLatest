@@ -40,10 +40,10 @@ const router = useRouter();
     }
   };
 
-  const openWebView = (affiliateLink: string) => {
+  const openWebView = (affiliateLink: string, storeId: string) => {
     // console.log('navigation', navigationNative);
     // const abcd = `webview/${affiliateLink}`;
-    navigationNative.navigate('webview/[url]', {url: affiliateLink});
+    navigationNative.navigate('webview/[url]', {url: affiliateLink, storeId: storeId});
     // console.log(abcd);
   //  router.push(abcd);
   }
@@ -125,7 +125,7 @@ const router = useRouter();
               className="flex-row items-center px-4 py-3 border-b border-gray-100"
 
             >
-              <TouchableOpacity onPress={() => openWebView(item.affiliateLink)}>
+              <TouchableOpacity onPress={() => openWebView(item.affiliateLink, item._id)}>
                 <View className="w-12 h-12 rounded-lg bg-gray-50 items-center justify-center mr-4 overflow-hidden border">
                   <Image
                     source={{ uri: item?.logoImage?.url }}

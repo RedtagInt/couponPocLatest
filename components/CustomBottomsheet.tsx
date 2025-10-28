@@ -4,15 +4,22 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 interface Props {
-    title: string;
-    children: any
+  title: string;
+  children: any,
+  onChange: any
 }
 
 type Ref = BottomSheet;
 
 const CustomBottomsheet = forwardRef<Ref, Props>((props, ref) => {
 
-    const snapPoints = useMemo(() => ['25%', '75%'], []);
+  const snapPoints = useMemo(() => ['25%', '75%'], []);
+
+  const handleSheetChanges = (index: any) => {
+    if (props.onChange) {
+      props.onChange(index); // Call the parent's onChange handler
+    }
+  };
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -24,6 +31,7 @@ const CustomBottomsheet = forwardRef<Ref, Props>((props, ref) => {
           enablePanDownToClose={true} // allows closing by panning down
           backgroundStyle={styles.bottomSheetBackground}
           handleIndicatorStyle={styles.bottomSheetHandleIndicator}
+          onChange={handleSheetChanges}
         >
           <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
             {props.children}
