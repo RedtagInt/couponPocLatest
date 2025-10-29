@@ -1,7 +1,7 @@
 import { View, Button, StyleSheet, Pressable, TextInput, Text } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/authContext';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import CustomBottomsheet from '@/components/CustomBottomsheet';
 import { RadioButton } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -164,6 +164,7 @@ const Index = () => {
 
       <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'
        onChange={() => {}}>
+        <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
         <View>
           <View className="flex-row gap-4">
             <View className="flex-1">
@@ -258,6 +259,7 @@ const Index = () => {
             <Text className="text-white text-center font-bold uppercase text-lg">Confirm</Text>
           </Pressable>
         </View>
+        </BottomSheetScrollView>
       </CustomBottomsheet>
     </View>
   );
@@ -273,6 +275,9 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginBottom: 5,
+  },
+  contentContainer: {
+    backgroundColor: "white",
   },
 });
 

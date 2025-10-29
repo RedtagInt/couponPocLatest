@@ -1,6 +1,6 @@
 // WebViewScreen.js
 import CustomBottomsheet from '@/components/CustomBottomsheet';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, SafeAreaView, View, Button, Platform, StatusBar, Text, TouchableOpacity, FlatList } from 'react-native';
@@ -130,7 +130,7 @@ const WebViewScreen = ({ route }: any) => {
             </TouchableOpacity>
           </View>
           {/* list */}
-          <FlatList
+          <BottomSheetFlatList
             data={vouchersData}
             keyExtractor={(i) => i._id}
             renderItem={({ item }) => <CouponRow item={item} />}

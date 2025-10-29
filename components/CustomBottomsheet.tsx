@@ -33,9 +33,9 @@ const CustomBottomsheet = forwardRef<Ref, Props>((props, ref) => {
           handleIndicatorStyle={styles.bottomSheetHandleIndicator}
           onChange={handleSheetChanges}
         >
-          <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
+          <View style={styles.contentContainer}>
             {props.children}
-          </BottomSheetScrollView>
+          </View>
         </BottomSheet>
       </View>
     </GestureHandlerRootView>

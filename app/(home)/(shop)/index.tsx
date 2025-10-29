@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { fetchData } from "@/services/baseservice";
 import { APIEndpoints } from "@/constants/appConstants";
 import CustomBottomsheet from "@/components/CustomBottomsheet";
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const FALLBACK_IMG = "https://img.icons8.com/ios-filled/100/backpack.png";
@@ -197,7 +197,7 @@ export default function CategoriesScreen({ navigation }: any) {
             </View>
 
 
-            <FlatList
+            <BottomSheetFlatList
               data={selectedCategory}
               keyExtractor={(i: any) => String(i._id)}
               renderItem={subItem}
