@@ -117,7 +117,7 @@ const WebViewScreen = ({ route }: any) => {
       )}
 
       <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'
-        onChange={handleSheetChanges}>
+        onChange={handleSheetChanges} snapPoints={null}>
         <View>
           {/* header */}
           <View className="px-4 pb-3 flex-row items-center justify-between">

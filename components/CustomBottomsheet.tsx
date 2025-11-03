@@ -6,14 +6,19 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 interface Props {
   title: string;
   children: any,
-  onChange: any
+  onChange: any,
+  snapPoints: any
 }
 
 type Ref = BottomSheet;
 
 const CustomBottomsheet = forwardRef<Ref, Props>((props, ref) => {
 
-  const snapPoints = useMemo(() => ['25%', '75%'], []);
+  // const snapPoints = useMemo(() => ['25%', '75%'], []);
+
+  const defaultSnapPoints = useMemo(() => ['25%', '50%', '75%'], []);
+  const sheetSnapPoints = props.snapPoints || defaultSnapPoints;
+
 
   const handleSheetChanges = (index: any) => {
     if (props.onChange) {
@@ -27,7 +32,7 @@ const CustomBottomsheet = forwardRef<Ref, Props>((props, ref) => {
         <BottomSheet
           ref={ref}
           index={-1} // -1 means hidden by default
-          snapPoints={snapPoints}
+          snapPoints={sheetSnapPoints}
           enablePanDownToClose={true} // allows closing by panning down
           backgroundStyle={styles.bottomSheetBackground}
           handleIndicatorStyle={styles.bottomSheetHandleIndicator}

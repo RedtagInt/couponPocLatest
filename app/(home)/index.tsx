@@ -163,7 +163,7 @@ const Index = () => {
       {/* <Button title="Close Bottom Sheet" onPress={handleClosePress} /> */}
 
       <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'
-       onChange={() => {}}>
+       onChange={() => {}} snapPoints={null}>
         <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
         <View>
           <View className="flex-row gap-4">
