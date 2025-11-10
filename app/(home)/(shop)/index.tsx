@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,54 +7,35 @@ import {
   Image,
   Dimensions,
   ActivityIndicator,
-  SafeAreaView,
-  Animated,
-  TouchableWithoutFeedback,
   StyleSheet,
-  Platform,
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchData } from "@/services/baseservice";
 import { APIEndpoints } from "@/constants/appConstants";
-import CustomBottomsheet from "@/components/CustomBottomsheet";
-import BottomSheet, { BottomSheetFlatList, BottomSheetModal } from "@gorhom/bottom-sheet";
-import CustomBottomsheetModal from "@/components/CustomBottomsheetModal";
-import { NativeViewGestureHandler } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
 import { router, Link } from 'expo-router';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const FALLBACK_IMG = "https://img.icons8.com/ios-filled/100/backpack.png";
 
 export default function CategoriesScreen({ navigation }: any) {
-
-  const navigationNative: any = useNavigation();
-
   const [allCategories, setAllCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>({});
   const [subCategories, setSubCategories] = useState<any>([]);
-  const bottomSheetRef = useRef<BottomSheet>(null);
 
+  const [modalVisible, setModalVisible] = useState(false);
 
 
   useEffect(() => {
     getCategories();
   }, []);
 
-  // When sheetOpen changes, animate sheet up/down
-  useEffect(() => {
-
-  });
-
   const getCategories = async () => {
     try {
       setLoading(true);
       const categories = await fetchData(APIEndpoints.getAllCategories);
-      // console.log('fetcheduser', fetchedData);
       if (categories && categories.data && categories.status.code === 200) {
-        // createUserData(fetchedData.data);
         setAllCategories(categories.data);
       } else {
       }
@@ -73,18 +54,12 @@ export default function CategoriesScreen({ navigation }: any) {
       const catId = String(cat._id);
       setSelectedCategory(cat);
       const category = await fetchData(APIEndpoints.getCategory + '/' + catId);
-      // console.log('category', category);
       if (category && category.data && category.status.code === 200) {
-        // createUserData(fetchedData.data);
-        bottomSheetRef.current?.expand();
         setSubCategories(category.data.length ? category.data : []);
-        //  setModalVisible(true);
-        // bottomSheetModalRef.current?.present();
-        bottomSheetRef.current?.expand();
+        setModalVisible(true);
 
       } else {
       }
-      // setAllCategories(categories);
     } catch (err) {
       console.error("Failed to fetch categories", err);
     } finally {
@@ -94,33 +69,23 @@ export default function CategoriesScreen({ navigation }: any) {
 
   function openCategory(cat: any) {
     getCategory(cat);
-    // bottomSheetRef.current?.expand();
-    // setSheetOpen(true);
   }
 
   function closeSheet() {
-    bottomSheetRef.current?.close();
+    setModalVisible(false);
+
   }
 
   const handleBack = () => {
-    // console.log('ckicked back');
-    // bottomSheetRef.current?.expand();
     // navigation?.goBack?.();
   }
 
   const navigateToProducts = (subCategory: any) => {
     console.log('item', subCategory._id);
-    // console.log('item', typeof subCategory);
-    // console.log('vouchers', subCategory.vouchers);
-    // console.log('vouchers type', typeof subCategory.vouchers);
-    // const vouchers = subCategory?.vouchers;
-    // const subc = JSON.parse(subCategory);
     router.navigate({
-      pathname: '/(home)/(fashion)/coupons', // The target screen's path
+      pathname: '/(home)/(fashion)/coupons',
       params: {
         categoryId: JSON.stringify(subCategory._id)
-        // products: subCategory.products ? subCategory.products : [],
-        // coupons: vouchers
       },
     });
   }
@@ -155,7 +120,6 @@ export default function CategoriesScreen({ navigation }: any) {
         className="flex-row items-center px-4 py-5 bg-white inner"
         activeOpacity={0.7}
         onPress={() => {
-          // console.log("Subcategory tapped:", item.categoryName);
           navigateToProducts(item);
         }}
       >
@@ -170,19 +134,8 @@ export default function CategoriesScreen({ navigation }: any) {
     );
   };
 
-  // if (loading) {
-  //   return (
-  //     <SafeAreaView className="flex-1 items-center justify-center bg-white">
-  //       <ActivityIndicator size="large" />
-  //     </SafeAreaView>
-  //   );
-  // }
-
   return (
-
     <View style={{ flex: 1 }}>
-
-
       <View style={{ flex: 1 }}>
         <View className="flex-row items-center px-4 pt-3">
           <TouchableOpacity className="p-2" onPress={() => handleBack()}>
@@ -191,56 +144,62 @@ export default function CategoriesScreen({ navigation }: any) {
           <Text className="text-xl font-bold ml-2">Explore Products</Text>
         </View>
 
-        <View style={{ flex: 1 }}>
-          <FlatList
-            style={{ flexGrow: 1 }}
-            data={allCategories}
-            renderItem={categoryCard}
-            keyExtractor={(i) => String(i._id)}
-            numColumns={2}
-            contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 0, paddingBottom: 40 }}
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={() => (
-              <View className="items-center justify-center py-20">
-                <Text className="text-gray-500">No categories found.</Text>
-              </View>
-            )}
-          />
-        </View>
-        <View style={{ flex: 1 }}>
-          <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'
-            onChange={() => { }} snapPoints={['75%']}>
-            <View className="bg-white rounded-t-3xl overflow-hidden" style={{ flex: 1 }}>
 
-              <View className="flex-row items-center justify-between px-5 py-3 border-b border-gray-200">
-                <Text className="text-2xl font-semibold">{selectedCategory?.categoryName ?? "Category"}</Text>
-                <TouchableOpacity onPress={closeSheet} className="p-1">
-                  <Ionicons name="close" size={28} color="#0b1220" />
-                </TouchableOpacity>
-              </View>
-
-
-              <BottomSheetFlatList
-                data={subCategories}
-                keyExtractor={(i: any) => String(i._id)}
-                renderItem={subItem}
-                ItemSeparatorComponent={() => <View className="h-px bg-gray-200 ml-20" />}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 40 }}
-                ListEmptyComponent={() => (
-                  <View className="py-8 px-4">
-                    <Text className="text-gray-500">No subcategories available.</Text>
-                  </View>
-                )}
-              />
+        <FlatList
+          style={{ flexGrow: 1 }}
+          data={allCategories}
+          renderItem={categoryCard}
+          keyExtractor={(i) => String(i._id)}
+          numColumns={2}
+          contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 0, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <View className="items-center justify-center py-20">
+              <Text className="text-gray-500">No categories found.</Text>
             </View>
-          </CustomBottomsheet>
-        </View>
+          )}
+        />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+
+              <View className="bg-white rounded-t-3xl overflow-hidden">
+
+                <View className="flex-row items-center justify-between px-5 py-3 border-b border-gray-200">
+                  <Text className="text-2xl font-semibold">{selectedCategory?.categoryName ?? "Category"}</Text>
+                  <TouchableOpacity onPress={closeSheet} className="p-1">
+                    <Ionicons name="close" size={28} color="#0b1220" />
+                  </TouchableOpacity>
+                </View>
+
+
+                <FlatList
+                  data={subCategories}
+                  keyExtractor={(i: any) => String(i._id)}
+                  renderItem={subItem}
+                  ItemSeparatorComponent={() => <View className="h-px bg-gray-200 ml-20" />}
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{ paddingBottom: 40 }}
+                  ListEmptyComponent={() => (
+                    <View className="py-8 px-4">
+                      <Text className="text-gray-500">No subcategories available.</Text>
+                    </View>
+                  )}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
       {
         loading && (
           <View style={styles.overlay}>
-
             <ActivityIndicator size="large" color="#0000ff" />
           </View>
         )}
@@ -273,5 +232,18 @@ const styles = StyleSheet.create({
   },
   inner: {
     paddingBottom: 20
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end', // Aligns content to the bottom
+    backgroundColor: 'rgba(0, 0, 0, 0.1)', // Semi-transparent background
+    // marginTop: 50
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    width: '100%', // Ensures full width
+    padding: 20,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   }
 });

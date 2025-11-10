@@ -1,10 +1,8 @@
 // WebViewScreen.js
-import CustomBottomsheet from '@/components/CustomBottomsheet';
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Button, Platform, StatusBar, Text, TouchableOpacity, FlatList } from 'react-native';
-import { black } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import { StyleSheet, SafeAreaView, View, Button, Platform, StatusBar, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
 import WebView from 'react-native-webview';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { fetchData } from '@/services/baseservice';
@@ -16,32 +14,20 @@ const WebViewScreen = ({ route }: any) => {
   const [vouchersData, setVouchersData] = useState<any[]>([]);
   const [isWebViewOpen, setIsWebView] = useState<boolean>(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
+
   const { url, storeId } = useLocalSearchParams<{ url: string, storeId: string }>();
   const webviewUrl = url ? url : 'https://www.google.com';
   console.log('url', url);
 
-  const [isSelected, setIsSelected] = React.useState(false);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-
   const handlePresentPress = useCallback(() => {
     getStore();
-    bottomSheetRef.current?.expand();
-    console.log('bottomSheetRef', bottomSheetRef);
+    setModalVisible(true);
   }, []);
 
   const handleClosePress = useCallback(() => {
-    bottomSheetRef.current?.close();
-    setIsSelected(false)
+    setModalVisible(false)
   }, []);
-
-  const handleSheetChanges = (index: any) => {
-    console.log('index', index);
-    if (index === -1) {
-      setIsWebView(false);
-    } else if (index === 2) {
-      setIsWebView(true);
-    }
-  };
 
   const getStore = async () => {
     try {
@@ -49,9 +35,7 @@ const WebViewScreen = ({ route }: any) => {
       const storeData = await fetchData(APIEndpoints.getStore + '/' + storeId);
       if (storeData && storeData.data && storeData.status.code === 200) {
         setStoreDataList(storeData?.data);
-        // console.log('storeDataList', storeDataList);
         const vouchers = storeData?.data?.[0]?.vouchers;
-        console.log('vouchers', vouchers);
         if (vouchers && vouchers.length) {
           setVouchersData(vouchers);
         } else {
@@ -102,43 +86,44 @@ const WebViewScreen = ({ route }: any) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1, marginBottom: 100 }}>
       <WebView
         source={{ uri: webviewUrl }}
         style={styles.webview}
-        // Optional: Add a loading indicator while the page loads
         startInLoadingState={true}
       />
       {!isWebViewOpen && (
         <Button
           title="Get Vouchers"
-          onPress={handlePresentPress} // Attach the function to the onPress prop
+          onPress={handlePresentPress}
         />
       )}
-
-      <CustomBottomsheet ref={bottomSheetRef} title='New Bottomsheet'
-        onChange={handleSheetChanges} snapPoints={null}>
-        <View>
-          {/* header */}
-          <View className="px-4 pb-3 flex-row items-center justify-between">
-            <Text className="text-xl font-semibold">{storeDataList?.[0]?.storeName}</Text>
-
-            {/* close button */}
-            <TouchableOpacity className="w-9 h-9 rounded-full items-center justify-center bg-gray-100"
-              onPress={handleClosePress}>
-              <Text className="text-gray-600 font-medium">x</Text>
-            </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View>
+              <View className="px-4 pb-3 flex-row items-center justify-between">
+                <Text className="text-xl font-semibold">{storeDataList?.[0]?.storeName}</Text>
+                <TouchableOpacity className="w-9 h-9 rounded-full items-center justify-center bg-gray-100"
+                  onPress={handleClosePress}>
+                  <Text className="text-gray-600 font-medium">x</Text>
+                </TouchableOpacity>
+              </View>
+              <FlatList
+                data={vouchersData}
+                keyExtractor={(i) => i._id}
+                renderItem={({ item }) => <CouponRow item={item} />}
+                contentContainerStyle={{ paddingBottom: 40 }}
+              />
+            </View>
           </View>
-          {/* list */}
-          <BottomSheetFlatList
-            data={vouchersData}
-            keyExtractor={(i) => i._id}
-            renderItem={({ item }) => <CouponRow item={item} />}
-            contentContainerStyle={{ paddingBottom: 40 }}
-          />
-
         </View>
-      </CustomBottomsheet>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -146,11 +131,12 @@ const WebViewScreen = ({ route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    // backgroundColor: "black",
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
   webview: {
     flex: 1,
+
   },
   dottedBox: {
     borderStyle: "dashed",
@@ -165,6 +151,23 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#E5E7EB",
     marginTop: 12,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end', // Aligns content to the bottom
+    backgroundColor: 'rgba(0, 0, 0, 0.1)', // Semi-transparent background
+    // marginTop: 50
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    width: '100%', // Ensures full width
+    padding: 20,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
   },
 });
 
