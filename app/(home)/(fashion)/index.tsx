@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router';
 import { useTabDataContext } from './_layout';
@@ -15,23 +15,23 @@ const Index = () => {
   // const products: any = [];
   return (
     <View style={{ flex: 1 }}>
-      <View className="flex-row items-center mb-6">
+      <View className="flex-row items-center py-3 px-4">
         <View className="w-8 h-8 bg-gray-300 rounded-full mr-2" />
         <Text className="text-xl font-semibold">Fashion</Text>
       </View>
-
-      <View className="flex-row flex-wrap justify-between">
+      <ScrollView>
+      <View className="flex-row flex-wrap justify-between pt-2 px-4">
         {products.map((item: any) => (
           <View key={item._id} className="w-[48%] bg-white rounded-2xl border border-gray-200 mb-4 p-3 shadow-sm">
             <View className="bg-gray-200 h-36 rounded-lg mb-3" />
-            <Text className="text-yellow-500 text-xs font-semibold mb-1">{item.discount}</Text>
-            <Text className="text-black font-semibold mb-1">{item.brand}</Text>
-            <Text className="text-gray-700 text-sm mb-3">{item.title}</Text>
+            <Text className="text-yellow-500 text-xs font-semibold mb-1">{item.productTag}</Text>
+            {/* <Text className="text-black font-semibold mb-1">{item.brand}</Text> */}
+            <Text className="text-gray-700 text-sm mb-3 line-clamp-2 h-10">{item.productTitle}</Text>
 
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
                 <Text className="text-black font-semibold text-base">₹{item.price}</Text>
-                <Text className="text-gray-400 text-sm line-through ml-2">₹{item.mrp}</Text>
+                <Text className="text-gray-400 text-sm line-through ml-2">₹{item.originalPrice}</Text>
               </View>
               <TouchableOpacity className="bg-gray-800 px-3 py-1 rounded">
                 <Text className="text-white text-xs font-semibold">Buy Now</Text>
@@ -40,6 +40,7 @@ const Index = () => {
           </View>
         ))}
       </View>
+      </ScrollView>
       {
         loading && (
           <View style={styles.overlay}>
