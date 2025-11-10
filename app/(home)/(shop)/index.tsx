@@ -21,27 +21,23 @@ import CustomBottomsheet from "@/components/CustomBottomsheet";
 import BottomSheet, { BottomSheetFlatList, BottomSheetModal } from "@gorhom/bottom-sheet";
 import CustomBottomsheetModal from "@/components/CustomBottomsheetModal";
 import { NativeViewGestureHandler } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
+import { router, Link } from 'expo-router';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const FALLBACK_IMG = "https://img.icons8.com/ios-filled/100/backpack.png";
 
 export default function CategoriesScreen({ navigation }: any) {
 
+  const navigationNative: any = useNavigation();
+
   const [allCategories, setAllCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<any>([]);
-
-  const [modalVisible, setModalVisible] = useState(false);
-
-  // control "sheet open" state
-  const [sheetOpen, setSheetOpen] = useState(false);
-
-  // Animated value for translateY of sheet
-  const sheetTranslateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-
+  const [selectedCategory, setSelectedCategory] = useState<any>({});
+  const [subCategories, setSubCategories] = useState<any>([]);
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
 
   useEffect(() => {
     getCategories();
@@ -73,14 +69,15 @@ export default function CategoriesScreen({ navigation }: any) {
   const getCategory = async (cat: any) => {
     try {
       setLoading(true);
-      console.log('cat', cat);
+      // console.log('cat', cat);
       const catId = String(cat._id);
+      setSelectedCategory(cat);
       const category = await fetchData(APIEndpoints.getCategory + '/' + catId);
-      console.log('category', category);
+      // console.log('category', category);
       if (category && category.data && category.status.code === 200) {
         // createUserData(fetchedData.data);
-
-        setSelectedCategory(category.data.length ? category.data : []);
+        bottomSheetRef.current?.expand();
+        setSubCategories(category.data.length ? category.data : []);
         //  setModalVisible(true);
         // bottomSheetModalRef.current?.present();
         bottomSheetRef.current?.expand();
@@ -97,18 +94,35 @@ export default function CategoriesScreen({ navigation }: any) {
 
   function openCategory(cat: any) {
     getCategory(cat);
-    bottomSheetRef.current?.expand();
+    // bottomSheetRef.current?.expand();
     // setSheetOpen(true);
   }
 
   function closeSheet() {
-    // setSheetOpen(false);
+    bottomSheetRef.current?.close();
   }
 
   const handleBack = () => {
-    console.log('ckicked back');
-    bottomSheetRef.current?.expand();
+    // console.log('ckicked back');
+    // bottomSheetRef.current?.expand();
     // navigation?.goBack?.();
+  }
+
+  const navigateToProducts = (subCategory: any) => {
+    console.log('item', subCategory._id);
+    // console.log('item', typeof subCategory);
+    // console.log('vouchers', subCategory.vouchers);
+    // console.log('vouchers type', typeof subCategory.vouchers);
+    // const vouchers = subCategory?.vouchers;
+    // const subc = JSON.parse(subCategory);
+    router.navigate({
+      pathname: '/(home)/(fashion)/coupons', // The target screen's path
+      params: {
+        categoryId: JSON.stringify(subCategory._id)
+        // products: subCategory.products ? subCategory.products : [],
+        // coupons: vouchers
+      },
+    });
   }
 
   const categoryCard = ({ item }: { item: any }) => {
@@ -141,7 +155,8 @@ export default function CategoriesScreen({ navigation }: any) {
         className="flex-row items-center px-4 py-5 bg-white inner"
         activeOpacity={0.7}
         onPress={() => {
-          console.log("Subcategory tapped:", item.categoryName);
+          // console.log("Subcategory tapped:", item.categoryName);
+          navigateToProducts(item);
         }}
       >
         <View className="w-12 h-12 rounded-full bg-[#f4e9d8] items-center justify-center mr-4 overflow-hidden">
@@ -198,7 +213,7 @@ export default function CategoriesScreen({ navigation }: any) {
             <View className="bg-white rounded-t-3xl overflow-hidden" style={{ flex: 1 }}>
 
               <View className="flex-row items-center justify-between px-5 py-3 border-b border-gray-200">
-                <Text className="text-2xl font-semibold">{selectedCategory?.name ?? "Category"}</Text>
+                <Text className="text-2xl font-semibold">{selectedCategory?.categoryName ?? "Category"}</Text>
                 <TouchableOpacity onPress={closeSheet} className="p-1">
                   <Ionicons name="close" size={28} color="#0b1220" />
                 </TouchableOpacity>
@@ -206,7 +221,7 @@ export default function CategoriesScreen({ navigation }: any) {
 
 
               <BottomSheetFlatList
-                data={selectedCategory}
+                data={subCategories}
                 keyExtractor={(i: any) => String(i._id)}
                 renderItem={subItem}
                 ItemSeparatorComponent={() => <View className="h-px bg-gray-200 ml-20" />}

@@ -49,7 +49,18 @@ export default function HomeLayout() {
             tabBarIcon: ({ color }) => <FontAwesome size={25} name="user" color={color} />,
           }}
         />
+        <Tabs.Screen
+          name="(fashion)" // Matches app/(tabs)/index.tsx
+          options={{
+            title: 'Fashion',
+            // tabBarIcon: ({ color }) => <FontAwesome size={25} name="user" color={color} />,
+            // tabBarButton: () => null
+            tabBarItemStyle: {display: 'none'}
+            
+          }}
+        />
       </Tabs>
+      
     </CommonWrapper>
   );
 

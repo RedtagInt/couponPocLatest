@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 const brands = ({ navigation }: any) => {
 
   const navigationNative: any = useNavigation();
-const router = useRouter();
+  const router = useRouter();
   const [brandList, setAllBrands] = useState<any[]>([]);
   const [trendingBrands, setTrendingBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,19 +43,19 @@ const router = useRouter();
   const openWebView = (affiliateLink: string, storeId: string) => {
     // console.log('navigation', navigationNative);
     // const abcd = `webview/${affiliateLink}`;
-    navigationNative.navigate('webview/[url]', {url: affiliateLink, storeId: storeId});
+    navigationNative.navigate('webview/[url]', { url: affiliateLink, storeId: storeId });
     // console.log(abcd);
-  //  router.push(abcd);
+    //  router.push(abcd);
   }
 
 
-  if (loading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" />
-      </SafeAreaView>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <SafeAreaView className="flex-1 items-center justify-center bg-white">
+  //       <ActivityIndicator size="large" />
+  //     </SafeAreaView>
+  //   );
+  // }
 
   return (
 
@@ -142,7 +142,13 @@ const router = useRouter();
             </View>
 
           ))}
+          {
+            loading && (
+              <View style={styles.overlay}>
 
+                <ActivityIndicator size="large" color="#0000ff" />
+              </View>
+            )}
         </View>
       </ScrollView>
 
@@ -151,6 +157,15 @@ const router = useRouter();
 }
 
 const styles = StyleSheet.create({
+   overlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    zIndex: 900,
+  },
   container: {
     flex: 1,
     // justifyContent: 'center',
