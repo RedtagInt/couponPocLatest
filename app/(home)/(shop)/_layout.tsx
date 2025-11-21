@@ -16,7 +16,6 @@ const _layout = () => {
                 <TabList style={styles.tabList}>
                     <TabTrigger name="index" href="/(home)/(shop)" style={styles.tabTriggerBtn}>
                         <Text style={isTabActive('/') ? styles.activeTabButton: styles.tabButton }>Categories</Text>
-
                     </TabTrigger>
                     <TabTrigger name="brands" href="/(home)/(shop)/brands" style={styles.tabTriggerBtn}>
                         <Text style={isTabActive('/brands') ? styles.activeTabButton: styles.tabButton  }>Brands</Text>
@@ -48,8 +47,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         backgroundColor: '#ffffff',
         paddingVertical: 0,
-        borderBottomWidth: 2,
-        borderBottomColor: 'gray',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
 
     },
     tabTriggerBtn: {
@@ -63,21 +62,22 @@ const styles = StyleSheet.create({
         // borderRadius: 5,
          flexDirection: 'row',
          textAlign: 'center',
-         fontSize: 16,
-         paddingVertical: 10
+         fontSize: 18,
+         paddingVertical: 16
     },
     activeTabButton: {
         backgroundColor: 'white',
         textAlign: 'center', // Example active background color
-        fontSize: 16,
-        color: 'blue',
+        fontSize: 18,
+        color: '#4f39f6',
         borderBottomWidth: 2,
-        borderBottomColor: 'blue',
-        paddingVertical: 10
+        borderBottomColor: '#4f39f6',
+        paddingVertical: 16,
+        fontWeight: '600'
     },
     tabText: {
         fontSize: 16,
-        color: '#333',
+        color: '#d1d5dc',
     },
     activeTabText: {
         color: '#fff', // Example active text color

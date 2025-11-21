@@ -86,7 +86,7 @@ const WebViewScreen = ({ route }: any) => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, marginBottom: 100 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <WebView
         source={{ uri: webviewUrl }}
         style={styles.webview}

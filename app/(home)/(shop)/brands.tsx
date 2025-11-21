@@ -21,7 +21,7 @@ const brands = ({ navigation }: any) => {
   useEffect(() => {
     getBrands();
   }, []);
-  const alphabetButtons = ["A-D", "E-H", "I-L", "M-P", "Q-T", "U-Z"];
+  const categoryTabs = ["Travel", "Fashion", "Gift", "Health", "Beauty", "Electronics"];
 
   const getBrands = async () => {
     try {
@@ -62,25 +62,25 @@ const brands = ({ navigation }: any) => {
     <SafeAreaView className="flex-1 bg-white">
 
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3">
+      {/* <View className="flex-row items-center px-4 py-3">
         <TouchableOpacity className="p-2" onPress={() => navigation?.goBack?.()}>
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
         <Text className="text-xl font-bold ml-2">Explore Products</Text>
-      </View>
+      </View> */}
 
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Trending Brands */}
         <View className="px-4 mt-4">
-          <Text className="text-lg font-semibold mb-3">Trending Brands</Text>
+          <Text className="text-xl font-semibold mb-3">Trending Brands</Text>
           <FlatList
             horizontal
             data={trendingBrands}
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
-              <View className="mr-3 items-center">
-                <View className="w-28 h-28 bg-white rounded-2xl overflow-hidden shadow">
+              <View className="mr-5 items-center">
+                <View className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow">
                   <Image source={{ uri: item?.logoImage?.url }} className="w-full h-full" resizeMode="cover" />
                 </View>
                 <Text className="mt-2 font-medium text-sm">{item?.storeName}</Text>
@@ -103,8 +103,8 @@ const brands = ({ navigation }: any) => {
         </View>
 
         {/* Alphabet Buttons */}
-        <View className="px-4 mt-4 flex-row flex-wrap gap-3">
-          {alphabetButtons.map((label) => (
+        <View className="px-4 mt-4 flex flex-row gap-3 overflow-scroll">
+          {categoryTabs.map((label) => (
             <TouchableOpacity
               key={label}
               className="px-4 py-2 bg-blue-600 rounded-full"
@@ -116,39 +116,37 @@ const brands = ({ navigation }: any) => {
 
         {/* Brand List */}
 
-        <View className="mt-5">
-          <Text className="px-4 text-lg font-semibold mb-2">#</Text>
+        <View className="mt-5 flex flex-row flex-wrap justify-center">
           {brandList?.map((item) => (
-
-            <View
+            <TouchableOpacity
               key={item._id}
-              className="flex-row items-center px-4 py-3 border-b border-gray-100"
-
+              onPress={() => openWebView(item.affiliateLink, item._id)}
+              className="w-1/3 mb-10 px-2 items-center"
             >
-              <TouchableOpacity onPress={() => openWebView(item.affiliateLink, item._id)}>
-                <View className="w-12 h-12 rounded-lg bg-gray-50 items-center justify-center mr-4 overflow-hidden border">
+              <View className="items-center">
+                <View className="w-20 h-20 rounded-lg bg-gray-50 items-center justify-center overflow-hidden">
                   <Image
                     source={{ uri: item?.logoImage?.url }}
-                    className="w-10 h-10"
+                    className="w-20 h-20"
                     resizeMode="contain"
                   />
                 </View>
-                <View className="flex-1">
-                  <Text className="text-base font-medium">{item?.storeName}</Text>
-                  <Text className="text-gray-500 text-sm">{item?.profitPer}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={22} color="#0b1220" />
-              </TouchableOpacity>
-            </View>
 
-          ))}
-          {
-            loading && (
-              <View style={styles.overlay}>
-
-                <ActivityIndicator size="large" color="#0000ff" />
+                <Text className="text-center text-sm font-medium mt-2">
+                  {item?.storeName}
+                </Text>
+                <Text className="text-center text-gray-500 text-xs">
+                  {item?.profitPer}
+                </Text>
               </View>
-            )}
+            </TouchableOpacity>
+          ))}
+
+          {loading && (
+            <View style={styles.overlay}>
+              <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+          )}
         </View>
       </ScrollView>
 

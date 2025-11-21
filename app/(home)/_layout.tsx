@@ -21,7 +21,7 @@ export default function HomeLayout() {
         }}
       >
         <Tabs.Screen
-
+        
           name="index" // Matches app/(tabs)/index.tsx
           options={{
             title: 'Home',
