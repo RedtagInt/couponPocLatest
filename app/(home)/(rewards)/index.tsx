@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 const Index = () => {
   return (
      <View>
-         <Text>Account Index</Text>
+         <Text>Rewards Index</Text>
        </View>
   )
 }

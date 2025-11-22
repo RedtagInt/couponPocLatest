@@ -91,7 +91,7 @@ export default function CategoriesScreen({ navigation }: any) {
   }
 
   const categoryCard = ({ item }: { item: any }) => {
-    const bgClass = item.bgColorClass ?? "bg-slate-100";
+    const bgClass = item.bgColorClass ?? "bg-gray-100";
     const imageUri = item.image || FALLBACK_IMG;
     return (
       <TouchableOpacity
@@ -135,14 +135,14 @@ export default function CategoriesScreen({ navigation }: any) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1 }} className="py-3 bg-white">
       <View style={{ flex: 1 }}>
-        <View className="flex-row items-center px-4 pt-3">
+        {/* <View className="flex-row items-center px-4 pt-3">
           <TouchableOpacity className="p-2" onPress={() => handleBack()}>
             <Ionicons name="arrow-back" size={24} color="#0b1220" />
           </TouchableOpacity>
           <Text className="text-xl font-bold ml-2">Explore Products</Text>
-        </View>
+        </View> */}
 
 
         <FlatList
