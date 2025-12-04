@@ -102,6 +102,7 @@ const WebViewScreen = ({ route }: any) => {
         source={{ uri: webviewUrl }}
         style={styles.webview}
         startInLoadingState={true}
+        userAgent="Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36"
       />
       {!isWebViewOpen && (
         <Button
