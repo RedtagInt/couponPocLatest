@@ -37,6 +37,7 @@ export default function CategoriesScreen({ navigation }: any) {
       const categories = await fetchData(APIEndpoints.getAllCategories);
       if (categories && categories.data && categories.status.code === 200) {
         setAllCategories(categories.data);
+
       } else {
       }
       // setAllCategories(categories);
@@ -55,8 +56,8 @@ export default function CategoriesScreen({ navigation }: any) {
       setSelectedCategory(cat);
       const category = await fetchData(APIEndpoints.getCategory + '/' + catId);
       if (category && category.data && category.status.code === 200) {
-        setSubCategories(category.data.length ? category.data : []);
-        setModalVisible(true);
+        // setSubCategories(category.data.length ? category.data : []);
+        // setModalVisible(true);
 
       } else {
       }
@@ -68,7 +69,14 @@ export default function CategoriesScreen({ navigation }: any) {
   };
 
   function openCategory(cat: any) {
-    getCategory(cat);
+    // getCategory(cat);
+    // console.log('cat', cat);
+    setSelectedCategory(cat);
+    if (allCategories && allCategories.length) {
+      const selectedCategory = allCategories.find(category => category.categoryLink === cat.categoryLink);
+      setSubCategories(selectedCategory?.relatedCategories);
+      setModalVisible(true);
+    }
   }
 
   function closeSheet() {
