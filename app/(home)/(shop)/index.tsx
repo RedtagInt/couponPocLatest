@@ -1,209 +1,290 @@
-import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  Dimensions,
-  ActivityIndicator,
+  View, Text, SafeAreaView, TouchableOpacity, Image, FlatList, TextInput, ScrollView, ActivityIndicator,
   StyleSheet,
+  Button,
   Modal,
-} from "react-native";
+  Alert
+} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { Ionicons } from "@expo/vector-icons";
-import { fetchData } from "@/services/baseservice";
-import { APIEndpoints } from "@/constants/appConstants";
-import { router, Link } from 'expo-router';
+import { fetchData, postData } from '@/services/baseservice';
+import { APIEndpoints, UserDataKey, UsermobKey } from '@/constants/appConstants';
+import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import CreateUserProfile from '@/components/UserProfile';
+import { UserProfile } from '@/services/homeservice';
+import { useAuth } from '@/contexts/authContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const FALLBACK_IMG = "https://img.icons8.com/ios-filled/100/backpack.png";
+const brands = ({ navigation }: any) => {
 
-export default function CategoriesScreen({ navigation }: any) {
-  const [allCategories, setAllCategories] = useState<any[]>([]);
+  const navigationNative: any = useNavigation();
+  const router = useRouter();
+
+  const [userMob, setUserMob] = useState('');
+  const [userData, setUserData] = useState(null);
+  const { createUserData } = useAuth();
+
+  const [brandList, setAllBrands] = useState<any[]>([]);
+  const [searchBrandsText, setSearchBrandsText] = useState('');
+  const [filteredBrandListData, setFilteredBrandListData] = useState(brandList);
+
+  let categoryWiseBrandsTemp: any[];
+  const [categoryWiseBrands, setcategoryWiseBrands] = useState<any[]>([]);
+  const [filteredcategoryWiseBrands, setFilteredcategoryWiseBrands] = useState<any>([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const flatListRef: any = useRef(null);
+
+  const [trendingBrands, setTrendingBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<any>({});
-  const [subCategories, setSubCategories] = useState<any>([]);
 
-  const [modalVisible, setModalVisible] = useState(false);
-
+  const [userProfmodalVisible, setUserProfModalVisible] = useState(false);
 
   useEffect(() => {
-    getCategories();
+    getUserMob();
+    getBrands();
+    getCategoryWiseBrands();
   }, []);
 
-  const getCategories = async () => {
+  const getUserMob = async () => {
+    const mob = await AsyncStorage.getItem(UsermobKey);
+    if (mob) {
+      setUserMob(mob);
+      checkUserExist(mob);
+    }
+  }
+
+  const checkUserExist = async (mob: any) => {
+    const fetchedData = await fetchData(APIEndpoints.getUser + '/' + mob);
+    if (fetchedData && fetchedData.data && fetchedData.status.code === 200) {
+      createUserData(fetchedData.data);
+    } else {
+      setUserProfModalVisible(true);
+    }
+  }
+
+  const handleUserProfileSubmit = async (data: any) => {
+    const createdUserdata = await postData(APIEndpoints.addUser, data);
+    if (createdUserdata && createdUserdata.data && createdUserdata.status.code === 200) {
+      await AsyncStorage.setItem(UserDataKey, createdUserdata.data);
+      setUserProfModalVisible(false);
+    } else {
+
+    }
+  };
+
+  const handleUserprofileCancel = () => {
+    setUserProfModalVisible(false);
+  };
+
+  const categoryTabs = ["Travel", "Fashion", "Gifts", "Health", "Beauty", "Electronics"];
+
+  const getBrands = async () => {
     try {
       setLoading(true);
-      const categories = await fetchData(APIEndpoints.getAllCategories);
-      if (categories && categories.data && categories.status.code === 200) {
-        setAllCategories(categories.data);
-      } else {
+      const brandList = await fetchData(APIEndpoints.getAllStores);
+      // console.log('brandList', brandList);
+      if (brandList && brandList.data && brandList.status.code === 200) {
+        setAllBrands(brandList.data?.allStores);
+        setTrendingBrands(brandList.data?.popularStores);
+        // setFilteredBrandListData(brandList.data?.allStores);
       }
-      // setAllCategories(categories);
     } catch (err) {
-      console.error("Failed to fetch categories", err);
+      console.error("Failed to fetch brandList", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const getCategory = async (cat: any) => {
+  const getCategoryWiseBrands = async () => {
     try {
       setLoading(true);
-      // console.log('cat', cat);
-      const catId = String(cat._id);
-      setSelectedCategory(cat);
-      const category = await fetchData(APIEndpoints.getCategory + '/' + catId);
-      if (category && category.data && category.status.code === 200) {
-        setSubCategories(category.data.length ? category.data : []);
-        setModalVisible(true);
-
-      } else {
+      const data = await fetchData(APIEndpoints.getPopularCategories);
+      // console.log('data/yy', data);
+      categoryWiseBrandsTemp = data.data;
+      if (data && data.data && data.status.code === 200) {
+        setcategoryWiseBrands(data.data);
+        // console.log('get data', categoryWiseBrands);
+        handleFilterClick(categoryTabs[1], true);
+        // if (categoryWiseBrands.length > 0 && flatListRef.current) {
+        //   flatListRef.current.scrollToIndex({ index: 1, animated: true });
+        // }
       }
     } catch (err) {
-      console.error("Failed to fetch categories", err);
+      console.error("Failed to fetch categoryWiseBrands", err);
     } finally {
       setLoading(false);
     }
-  };
-
-  function openCategory(cat: any) {
-    getCategory(cat);
   }
 
-  function closeSheet() {
-    setModalVisible(false);
-
+  const openWebView = (affiliateLink: string, storeId: string) => {
+    navigationNative.navigate('webview/[url]', { url: affiliateLink, storeId: storeId });
   }
 
-  const handleBack = () => {
-    // navigation?.goBack?.();
-  }
-
-  const navigateToProducts = (subCategory: any) => {
-    console.log('item', subCategory._id);
-    router.navigate({
-      pathname: '/(home)/(fashion)/coupons',
-      params: {
-        categoryId: JSON.stringify(subCategory._id)
-      },
+  const handleSearch = (text: string) => {
+    setSearchBrandsText(text);
+    const newData = brandList.filter(item => {
+      const itemData = item?.storeName.toUpperCase();
+      const textData = text.toUpperCase();
+      return itemData.indexOf(textData) > -1;
     });
-  }
-
-  const categoryCard = ({ item }: { item: any }) => {
-    const bgClass = item.bgColorClass ?? "bg-gray-100";
-    const imageUri = item.image || FALLBACK_IMG;
-    return (
-      <TouchableOpacity
-        className={`flex-1 m-3 p-5 rounded-2xl ${bgClass}`}
-        activeOpacity={0.85}
-        onPress={() => openCategory(item)}
-      >
-        <View className="flex-row justify-between items-start">
-          <View style={{ flex: 1 }}>
-            <Text className="text-lg font-semibold text-black">{item.categoryName}</Text>
-            <Text className="text-sm text-gray-600 mt-1">{item.offers ?? 0} Offers</Text>
-          </View>
-
-        </View>
-        <View>
-          <Image source={{ uri: imageUri }} className="w-16 h-16 ml-auto" resizeMode="contain" />
-        </View>
-      </TouchableOpacity>
-    );
+    setFilteredBrandListData(newData);
   };
 
-  const subItem = ({ item }: { item: any }) => {
-    const imageUri = item.image || FALLBACK_IMG;
-    return (
-      <TouchableOpacity
-        className="flex-row items-center px-4 py-5 bg-white inner"
-        activeOpacity={0.7}
-        onPress={() => {
-          navigateToProducts(item);
-        }}
-      >
-        <View className="w-12 h-12 rounded-full bg-[#f4e9d8] items-center justify-center mr-4 overflow-hidden">
-          <Image source={{ uri: imageUri }} className="w-10 h-10" resizeMode="contain" />
-        </View>
+  const handleFilterClick = (category: string, isFirstTime = false) => {
 
-        <Text className="flex-1 text-lg font-medium text-black">{item.categoryName}</Text>
+    setSelectedCategory(category);
+    const arrYToFilter = isFirstTime ? categoryWiseBrandsTemp : categoryWiseBrands;
+    if (arrYToFilter && arrYToFilter.length) {
+      const newData = category ? arrYToFilter.filter(item => item.categoryName === category) : [];
+      setFilteredcategoryWiseBrands(newData);
+      // console.log('newdata', category, categoryWiseBrands);
+    }
 
-        <Ionicons name="chevron-forward" size={22} color="#0b1220" />
-      </TouchableOpacity>
-    );
+    // Optional: Scroll to the first item of the filtered list
+    // if (newData.length > 0 && flatListRef.current) {
+    //   flatListRef.current.scrollToIndex({ index: 0, animated: true });
+    // }
+  };
+
+
+  const handleItemClick = (item: any) => {
+    // Find the index of the clicked item within the *filtered* data
+    const index = filteredcategoryWiseBrands.findIndex((dataItem: any) => dataItem.id === item.id);
+    // if (index !== -1 && flatListRef.current) {
+    //   flatListRef.current.scrollToIndex({ index, animated: true });
+    // }
   };
 
   return (
-    <View style={{ flex: 1 }} className="py-3 bg-white">
-      <View style={{ flex: 1 }}>
-        {/* <View className="flex-row items-center px-4 pt-3">
-          <TouchableOpacity className="p-2" onPress={() => handleBack()}>
-            <Ionicons name="arrow-back" size={24} color="#0b1220" />
-          </TouchableOpacity>
-          <Text className="text-xl font-bold ml-2">Explore Products</Text>
-        </View> */}
 
+    <SafeAreaView className="flex-1 bg-white">
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={userProfmodalVisible}
+        onRequestClose={() => setUserProfModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
 
-        <FlatList
-          style={{ flexGrow: 1 }}
-          data={allCategories}
-          renderItem={categoryCard}
-          keyExtractor={(i) => String(i._id)}
-          numColumns={2}
-          contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 0, paddingBottom: 40 }}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={() => (
-            <View className="items-center justify-center py-20">
-              <Text className="text-gray-500">No categories found.</Text>
+            <View className="bg-white rounded-t-3xl overflow-hidden">
+              <View className="flex-row items-center justify-between py-3 border-b border-gray-200">
+                <Text className="text-2xl font-semibold">User Not Found !!!</Text>
+                <TouchableOpacity onPress={handleUserprofileCancel} className="p-1">
+                  <Ionicons name="close" size={28} color="#0b1220" />
+                </TouchableOpacity>
+              </View>
+              <CreateUserProfile onSubmit={handleUserProfileSubmit} onCancel={handleUserprofileCancel}></CreateUserProfile>
+
             </View>
-          )}
-        />
+          </View>
+        </View>
+      </Modal>
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Trending Brands */}
 
-              <View className="bg-white rounded-t-3xl overflow-hidden">
 
-                <View className="flex-row items-center justify-between px-5 py-3 border-b border-gray-200">
-                  <Text className="text-2xl font-semibold">{selectedCategory?.categoryName ?? "Category"}</Text>
-                  <TouchableOpacity onPress={closeSheet} className="p-1">
-                    <Ionicons name="close" size={28} color="#0b1220" />
-                  </TouchableOpacity>
+        <View className="px-4 mt-4">
+          <Text className="text-xl font-semibold mb-3">Trending Brands</Text>
+          <FlatList
+            horizontal
+            data={trendingBrands}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => (
+              <View className="mr-5 items-center">
+                <View className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow">
+                  <Image source={{ uri: item?.logoImage?.url }} className="w-full h-full" resizeMode="cover" />
+                </View>
+                <Text className="mt-2 font-medium text-sm">{item?.storeName}</Text>
+              </View>
+            )}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+
+        {/* Search Bar */}
+        <View className="px-4 mt-5">
+          <View className="flex-row items-center bg-gray-100 rounded-xl px-3 py-2">
+            <Ionicons name="search" size={20} color="#6b7280" />
+            <TextInput
+              placeholder="Search brands"
+              className="ml-3 flex-1 text-base"
+              placeholderTextColor="#9ca3af"
+              value={searchBrandsText}
+              onChangeText={handleSearch}
+            />
+          </View>
+        </View>
+
+        {/* Alphabet Buttons */}
+        <View className="px-4 mt-4 flex flex-row gap-3 overflow-scroll">
+          {categoryTabs.map((label) => (
+            <TouchableOpacity
+              key={label}
+              className="px-4 py-2 bg-blue-600 rounded-full"
+              style={selectedCategory === label ? styles.activeCategory : ''}
+              onPress={() => handleFilterClick(label)}
+            >
+              <Text className="text-white font-medium">{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Brand List */}
+
+
+
+        <View className="mt-5 flex flex-row flex-wrap justify-center">
+          {searchBrandsText && filteredBrandListData?.map((item) => (
+            <TouchableOpacity
+              key={item._id}
+              onPress={() => openWebView(item.affiliateLink, item._id)}
+              className="w-1/3 mb-10 px-2 items-center"
+            >
+              <View className="items-center">
+                <View className="w-20 h-20 rounded-lg bg-gray-50 items-center justify-center overflow-hidden">
+                  <Image
+                    source={{ uri: item?.logoImage?.url }}
+                    className="w-20 h-20"
+                    resizeMode="contain"
+                  />
                 </View>
 
-
-                <FlatList
-                  data={subCategories}
-                  keyExtractor={(i: any) => String(i._id)}
-                  renderItem={subItem}
-                  ItemSeparatorComponent={() => <View className="h-px bg-gray-200 ml-20" />}
-                  showsVerticalScrollIndicator={false}
-                  contentContainerStyle={{ paddingBottom: 40 }}
-                  ListEmptyComponent={() => (
-                    <View className="py-8 px-4">
-                      <Text className="text-gray-500">No subcategories available.</Text>
-                    </View>
-                  )}
-                />
+                <Text className="text-center text-sm font-medium mt-2">
+                  {item?.storeName}
+                </Text>
+                <Text className="text-center text-gray-500 text-xs">
+                  {item?.profitPer}
+                </Text>
               </View>
+            </TouchableOpacity>
+          ))}
+
+
+          {loading && (
+            <View style={styles.overlay}>
+              <ActivityIndicator size="large" color="#0000ff" />
             </View>
-          </View>
-        </Modal>
-      </View>
-      {
-        loading && (
-          <View style={styles.overlay}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        )}
-    </View >
+          )}
+        </View>
+
+      </ScrollView>
+      {!searchBrandsText &&
+        <FlatList
+          ref={flatListRef}
+          data={filteredcategoryWiseBrands[0]?.stores}
+          keyExtractor={item => item._id}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleItemClick(item)}>
+              <Text>{item.storeName} ({item.storeLink})</Text>
+            </TouchableOpacity>
+          )}
+        />}
+
+
+    </SafeAreaView>
   );
 }
 
@@ -217,21 +298,11 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.45)",
     zIndex: 900,
   },
-  sheetContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: Math.min(SCREEN_HEIGHT * 0.65, 720),
-    zIndex: 1000,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    backgroundColor: "transparent",
-  },
-  inner: {
-    paddingBottom: 20
+  container: {
+    flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // paddingTop: 50, // Adjust as needed
   },
   modalOverlay: {
     flex: 1,
@@ -245,5 +316,11 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-  }
+  },
+  activeCategory: {
+    backgroundColor: 'grey',
+    // color: '#4f39f6',
+  },
 });
+
+export default brands

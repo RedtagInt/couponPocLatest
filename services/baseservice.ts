@@ -55,7 +55,8 @@ export const postData = async (endpoint: string, payload: any) => {
 const handleResponseErrors = (response: any, data: any) => {
   // console.log(JSON.stringify(response.status));
   if (response.status === 404 || response.status === 409) {
-    alert(data.status.message);
+    // alert(data.status.message);
+    console.log('data.status.message', data.status.message);
   }
 }
 

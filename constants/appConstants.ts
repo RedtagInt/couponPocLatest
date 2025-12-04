@@ -15,6 +15,7 @@ export const APIEndpoints = {
     getAllCategories: 'user/getAllCategories',
     getCategory: 'user/getCategory',
     getAllStores: 'user/getAllStores',
+    getPopularCategories: 'user/getPopularCategories',
     getStore: 'user/getStore'
 }
 

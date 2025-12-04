@@ -20,14 +20,14 @@ export default function HomeLayout() {
           headerShown: false,
         }}
       >
-        <Tabs.Screen
+        {/* <Tabs.Screen
         
           name="index" // Matches app/(tabs)/index.tsx
           options={{
             title: 'Home',
             tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
           }}
-        />
+        /> */}
         <Tabs.Screen
           name="(shop)" // Matches app/(tabs)/profile.tsx
           options={{

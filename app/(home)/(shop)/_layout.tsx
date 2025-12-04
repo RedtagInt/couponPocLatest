@@ -14,11 +14,11 @@ const _layout = () => {
         <View style={styles.container}>
             <Tabs>
                 <TabList style={styles.tabList}>
-                    <TabTrigger name="index" href="/(home)/(shop)" style={styles.tabTriggerBtn}>
-                        <Text style={isTabActive('/') ? styles.activeTabButton: styles.tabButton }>Categories</Text>
+                    <TabTrigger name="index" href="/(home)/(shop)/categories" style={styles.tabTriggerBtn}>
+                        <Text style={isTabActive('/categories') ? styles.activeTabButton: styles.tabButton }>Categories</Text>
                     </TabTrigger>
-                    <TabTrigger name="brands" href="/(home)/(shop)/brands" style={styles.tabTriggerBtn}>
-                        <Text style={isTabActive('/brands') ? styles.activeTabButton: styles.tabButton  }>Brands</Text>
+                    <TabTrigger name="brands" href="/(home)/(shop)" style={styles.tabTriggerBtn}>
+                        <Text style={isTabActive('/') ? styles.activeTabButton: styles.tabButton  }>Brands</Text>
                     </TabTrigger>
                 </TabList>
                 <View style={{ flex: 1 }}>

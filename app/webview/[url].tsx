@@ -2,11 +2,12 @@
 
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Button, Platform, StatusBar, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Button, Platform, StatusBar, Text, TouchableOpacity, FlatList, Modal, ToastAndroid, Alert } from 'react-native';
 import WebView from 'react-native-webview';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { fetchData } from '@/services/baseservice';
 import { APIEndpoints } from '@/constants/appConstants';
+import * as Clipboard from 'expo-clipboard';
 
 const WebViewScreen = ({ route }: any) => {
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,8 @@ const WebViewScreen = ({ route }: any) => {
   const { url, storeId } = useLocalSearchParams<{ url: string, storeId: string }>();
   const webviewUrl = url ? url : 'https://www.google.com';
   console.log('url', url);
+
+  const [copiedText, setCopiedText] = useState('');
 
   const handlePresentPress = useCallback(() => {
     getStore();
@@ -48,6 +51,14 @@ const WebViewScreen = ({ route }: any) => {
       setLoading(false);
     }
   };
+
+  const handleCopyPress = async (textToCopy: string) => {
+    if (textToCopy) {
+      await Clipboard.setStringAsync(textToCopy);
+      const text = await Clipboard.getStringAsync();
+    }
+  };
+
   function CouponRow({ item }: { item: any }) {
     return (
       <View className="px-4 py-3">
@@ -72,7 +83,7 @@ const WebViewScreen = ({ route }: any) => {
           </View>
 
           {/* copy icon */}
-          <TouchableOpacity className="ml-3 p-2">
+          <TouchableOpacity className="ml-3 p-2" onPress={() => handleCopyPress(item?.voucherCode)}>
             <MaterialIcons name="content-copy" size={20} color="#111827" />
           </TouchableOpacity>
         </View>
