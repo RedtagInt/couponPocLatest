@@ -148,12 +148,14 @@ const brands = ({ navigation }: any) => {
   };
 
 
-  const handleItemClick = (item: any) => {
-    // Find the index of the clicked item within the *filtered* data
-    const index = filteredcategoryWiseBrands.findIndex((dataItem: any) => dataItem.id === item.id);
-    // if (index !== -1 && flatListRef.current) {
-    //   flatListRef.current.scrollToIndex({ index, animated: true });
-    // }
+  const handleCategoryWiseBrands = (item: any) => {
+    if (brandList && brandList.length) {
+      const store = brandList.find((store: any) => store._id === item._id);
+      console.log('store', store);
+      if (store && store.affiliateLink) {
+        openWebView(store.affiliateLink, store._id);
+      }
+    }
   };
 
   return (
@@ -193,12 +195,14 @@ const brands = ({ navigation }: any) => {
             data={trendingBrands}
             keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => (
-              <View className="mr-5 items-center">
-                <View className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow">
-                  <Image source={{ uri: item?.logoImage?.url }} className="w-full h-full" resizeMode="cover" />
+              <TouchableOpacity onPress={() => openWebView(item.affiliateLink, item._id)}>
+                <View className="mr-5 items-center">
+                  <View className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow">
+                    <Image source={{ uri: item?.logoImage?.url }} className="w-full h-full" resizeMode="cover" />
+                  </View>
+                  <Text className="mt-2 font-medium text-sm">{item?.storeName}</Text>
                 </View>
-                <Text className="mt-2 font-medium text-sm">{item?.storeName}</Text>
-              </View>
+              </TouchableOpacity>
             )}
             showsHorizontalScrollIndicator={false}
           />
@@ -277,7 +281,7 @@ const brands = ({ navigation }: any) => {
           data={filteredcategoryWiseBrands[0]?.stores}
           keyExtractor={item => item._id}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemClick(item)}>
+            <TouchableOpacity onPress={() => handleCategoryWiseBrands(item)}>
               <Text>{item.storeName} ({item.storeLink})</Text>
             </TouchableOpacity>
           )}
