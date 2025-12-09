@@ -19,7 +19,7 @@ const WebViewScreen = ({ route }: any) => {
 
   const { url, storeId } = useLocalSearchParams<{ url: string, storeId: string }>();
   const webviewUrl = url ? url : 'https://www.google.com';
-  console.log('url', url);
+  // console.log('url', url);
 
   const [copiedText, setCopiedText] = useState('');
 
