@@ -25,6 +25,23 @@ export const getInitials = (firstName: string, lastName: string) => {
   return firstTwoFirstName + firstTwoLastName;
 }
 
+export const createBirthDate = (birthYear: number, birthMonth: number) => {
+  if (birthYear && birthMonth) {
+    // birthMonth should be a number from 1 to 12.
+    // We subtract 1 because JavaScript months are 0-indexed (0-11).
+    const jsMonth = birthMonth - 1;
+
+    // Create a new Date object, setting the day to 1 to represent the start of the month.
+    const birthDate = new Date(birthYear, jsMonth, 1);
+
+    return birthDate;
+  } else {
+    return new Date();
+  }
+
+}
+
+
 
 
 

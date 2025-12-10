@@ -1,5 +1,5 @@
 import React, { ComponentProps, useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { UserProfile } from '@/services/homeservice';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '@/contexts/authContext';
@@ -38,6 +38,9 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ userProfile, onSubmit, onCan
     useEffect(() => {
         getUserMob();
         setFormData(userProfile);
+        if(formData && formData.dob) {
+            setDate(formData.dob);
+        }
     }, []);
 
     const getUserMob = async () => {
@@ -110,6 +113,11 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ userProfile, onSubmit, onCan
         showMode('time');
     };
 
+    const formatDate = (date: any) => {
+        if (!date) return '';
+        return date.toLocaleDateString(); // Customize date format as needed
+    };
+
 
     const handleInputChange = (field: keyof UserProfile, value: string) => {
         setFormData(prevData => ({
@@ -126,7 +134,7 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ userProfile, onSubmit, onCan
                 mobileNo: Number(userMob),
                 name: formData.firstName + ' ' + formData.lastName,
                 email: formData.email,
-                birthMonth: new Date(formData.dob).getMonth(),
+                birthMonth: (new Date(formData.dob).getMonth() + 1),
                 birthYear: new Date(formData.dob).getFullYear(),
                 gender: Number(formData.gender)
             }
@@ -216,9 +224,16 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ userProfile, onSubmit, onCan
                     })}
                 </View>
                 {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
-                <Button onPress={showDatepicker} title="Select Date of Birth!" />
-                {/* <Button onPress={showTimepicker} title="Show time picker!" /> */}
-                {/* <Text>selected: {date.toLocaleString()}</Text> */}
+                {/* <Button onPress={showDatepicker} title="Select Date of Birth!" /> */}
+                <TouchableOpacity onPress={showDatepicker}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Select Date of Birth!"
+                        value={formatDate(date)}
+                        className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
+                        editable={false} // Prevent direct text input
+                    />
+                </TouchableOpacity>
                 {show && (
                     <DateTimePicker
                         testID="dateTimePicker"
@@ -226,6 +241,7 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ userProfile, onSubmit, onCan
                         mode={mode}
                         is24Hour={true}
                         onChange={onChange}
+                        display='spinner'
                     />
                 )}
                 {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}

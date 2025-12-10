@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserDataKey } from '@/constants/appConstants';
 import { UserProfile } from '@/services/homeservice';
-import { getInitials } from '@/services/baseservice';
+import { createBirthDate, getInitials } from '@/services/baseservice';
 
 const Index = () => {
 
@@ -27,11 +27,13 @@ const Index = () => {
     let user: any = await AsyncStorage.getItem(UserDataKey);
     if (user) {
       user = JSON.parse(user);
+      console.log('user', user);
       const tempObj: any = {
         firstName: user.name ? user.name : '',
         mobileNo: user.mobileNo ? user.mobileNo : '',
         email: user.email ? user.email : '',
-        gender: user.gender ? String(user.gender) : ''
+        gender: user.gender ? String(user.gender) : '',
+        dob: createBirthDate(user?.birthYear, user?.birthMonth)
       }
        
       // setUserProfile(prev => ({...prev, tempObj}));

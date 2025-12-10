@@ -74,9 +74,12 @@ const brands = ({ navigation }: any) => {
   }
 
   const handleUserProfileSubmit = async (data: any) => {
+    // console.log('user data first submit', data);
+    // return;
     const createdUserdata = await postData(APIEndpoints.addUser, data);
     if (createdUserdata && createdUserdata.data && createdUserdata.status.code === 200) {
-      await AsyncStorage.setItem(UserDataKey, createdUserdata.data);
+      // console.log('user data first submit response', createdUserdata.data);
+      await createUserData(createdUserdata.data);
       setUserProfModalVisible(false);
     } else {
 
