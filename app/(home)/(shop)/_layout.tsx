@@ -14,11 +14,11 @@ const _layout = () => {
         <View style={styles.container}>
             <Tabs>
                 <TabList style={styles.tabList}>
-                    <TabTrigger name="index" href="/(home)/(shop)/categories" style={styles.tabTriggerBtn}>
-                        <Text style={isTabActive('/categories') ? styles.activeTabButton: styles.tabButton }>Categories</Text>
+                    <TabTrigger name="index" href="/(home)/(shop)" style={styles.tabTriggerBtn}>
+                        <Text style={isTabActive('/') ? styles.activeTabButton : styles.tabButton}>Brands</Text>
                     </TabTrigger>
-                    <TabTrigger name="brands" href="/(home)/(shop)" style={styles.tabTriggerBtn}>
-                        <Text style={isTabActive('/') ? styles.activeTabButton: styles.tabButton  }>Brands</Text>
+                    <TabTrigger name="brands" href="/(home)/(shop)/categories" style={styles.tabTriggerBtn}>
+                        <Text style={isTabActive('/categories') ? styles.activeTabButton : styles.tabButton}>Categories</Text>
                     </TabTrigger>
                 </TabList>
                 <View style={{ flex: 1 }}>
@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
         // paddingHorizontal: 15,
         // paddingVertical: 8,
         // borderRadius: 5,
-         flexDirection: 'row',
-         textAlign: 'center',
-         fontSize: 18,
-         paddingVertical: 16
+        flexDirection: 'row',
+        textAlign: 'center',
+        fontSize: 18,
+        paddingVertical: 16
     },
     activeTabButton: {
         backgroundColor: 'white',
