@@ -8,7 +8,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { Ionicons } from "@expo/vector-icons";
 import { fetchData, postData } from '@/services/baseservice';
-import { APIEndpoints, UserDataKey, UsermobKey } from '@/constants/appConstants';
+import { APIEndpoints, CategoryTabs, UserDataKey, UsermobKey } from '@/constants/appConstants';
 import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import CreateUserProfile from '@/components/UserProfile';
@@ -39,6 +39,16 @@ const brands = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
 
   const [userProfmodalVisible, setUserProfModalVisible] = useState(false);
+
+  const userProfile = {
+    gender: '',
+    firstName: '',
+    lastName: '',
+    mobileNo: null,
+    email: '',
+    dob: '',
+    referralCode: ''
+  };
 
   useEffect(() => {
     getUserMob();
@@ -77,7 +87,7 @@ const brands = ({ navigation }: any) => {
     setUserProfModalVisible(false);
   };
 
-  const categoryTabs = ["Travel", "Fashion", "Gifts", "Health", "Beauty", "Electronics"];
+  const categoryTabs = CategoryTabs;
 
   const getBrands = async () => {
     try {
@@ -177,7 +187,7 @@ const brands = ({ navigation }: any) => {
                   <Ionicons name="close" size={28} color="#0b1220" />
                 </TouchableOpacity>
               </View>
-              <CreateUserProfile onSubmit={handleUserProfileSubmit} onCancel={handleUserprofileCancel}></CreateUserProfile>
+              <CreateUserProfile userProfile={userProfile} onSubmit={handleUserProfileSubmit} onCancel={handleUserprofileCancel}></CreateUserProfile>
 
             </View>
           </View>

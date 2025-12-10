@@ -19,4 +19,6 @@ export const APIEndpoints = {
     getStore: 'user/getStore'
 }
 
+export const CategoryTabs = ["Travel", "Fashion", "Gifts", "Health", "Beauty", "Electronics"];
+
 

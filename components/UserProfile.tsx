@@ -11,29 +11,33 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 interface MyFormProps {
     onSubmit: (formData: UserProfile) => void;
     onCancel: () => void;
+    userProfile: UserProfile;
 }
 
 
-const CreateUserProfile: React.FC<MyFormProps> = ({ onSubmit, onCancel }) => {
+const CreateUserProfile: React.FC<MyFormProps> = ({ userProfile, onSubmit, onCancel }) => {
 
     const [userMob, setUserMob] = useState('');
     const [userData, setUserData] = useState(null);
     const { createUserData } = useAuth();
 
-    const [formData, setFormData] = useState<UserProfile>({
-        gender: '',
-        firstName: '',
-        lastName: '',
-        mobileNo: null,
-        email: '',
-        dob: '',
-        referralCode: ''
-    });
+    // const [formData, setFormData] = useState<UserProfile>({
+    //     gender: '',
+    //     firstName: '',
+    //     lastName: '',
+    //     mobileNo: null,
+    //     email: '',
+    //     dob: '',
+    //     referralCode: ''
+    // });
+
+    const [formData, setFormData] = useState<UserProfile>(userProfile);
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         getUserMob();
+        setFormData(userProfile);
     }, []);
 
     const getUserMob = async () => {
@@ -158,6 +162,7 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ onSubmit, onCancel }) => {
                         <Text className="text-lg font-bold text-black mb-2">First Name</Text>
                         <TextInput style={styles.input}
                             placeholder=""
+                            value={formData.firstName}
                             className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
                             onChangeText={text => handleInputChange('firstName', text)}
                         />
@@ -167,6 +172,7 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ onSubmit, onCancel }) => {
                         <Text className="text-lg font-bold text-black mb-2">Last Name</Text>
                         <TextInput style={styles.input}
                             placeholder=""
+                            value={formData.lastName}
                             className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
                             onChangeText={text => handleInputChange('lastName', text)}
                         />
@@ -228,6 +234,7 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ onSubmit, onCancel }) => {
                     // mode="outlined"
                     // label=""
                     placeholder="Enter Email ID"
+                    value={formData.email}
                     className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
                     onChangeText={text => handleInputChange('email', text)}
                 />
@@ -236,6 +243,7 @@ const CreateUserProfile: React.FC<MyFormProps> = ({ onSubmit, onCancel }) => {
                 <TextInput style={styles.input}
                     // mode="outlined"
                     // label=""
+                    value={formData.referralCode}
                     placeholder="Referral Code (Optional)"
                     className="p-3 bg-white border border-gray-300 rounded-lg text-lg"
                     onChangeText={text => handleInputChange('referralCode', text)}

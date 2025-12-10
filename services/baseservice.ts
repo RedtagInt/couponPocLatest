@@ -1,5 +1,30 @@
 import { BASE_URL } from "@/constants/appConstants";
-import { Button, Alert } from 'react-native';
+
+
+
+export const getInitials = (firstName: string, lastName: string) => {
+  let firstTwoFirstName = '';
+  let firstTwoLastName = '';
+
+  // Get the first letters of the first name
+  if (firstName && firstName.length >= 2) {
+    firstTwoFirstName = firstName.slice(0, 1);
+  } else if (firstName && firstName.length === 1) {
+    firstTwoFirstName = firstName.slice(0, 1); // If only one letter, take that one
+  }
+
+  // Get the first letter of the last name
+  if (lastName && lastName.length >= 2) {
+    firstTwoLastName = lastName.slice(0, 1);
+  } else if (lastName && lastName.length === 1) {
+    firstTwoLastName = lastName.slice(0, 1); // If only one letter, take that one
+  }
+
+  // console.log(firstTwoFirstName + firstTwoLastName);
+
+  return firstTwoFirstName + firstTwoLastName;
+}
+
 
 
 
@@ -12,12 +37,12 @@ export const fetchData = async (endpoint: string) => {
       }
     });
     const data = await response.json();
-    if(response)
+    if (response)
       // console.log('response', data);
-    if (!response.ok) {
-      handleResponseErrors(response, data);
-      // throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      if (!response.ok) {
+        handleResponseErrors(response, data);
+        // throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
     return data;
   } catch (error) {
