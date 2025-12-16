@@ -8,19 +8,21 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { fetchData } from '@/services/baseservice';
 import { APIEndpoints } from '@/constants/appConstants';
 import * as Clipboard from 'expo-clipboard';
+import { useNavigation } from '@react-navigation/native';
 
 const WebViewScreen = ({ route }: any) => {
   const [loading, setLoading] = useState(false);
   const [storeDataList, setStoreDataList] = useState<any>([]);
   const [vouchersData, setVouchersData] = useState<any[]>([]);
   const [isWebViewOpen, setIsWebView] = useState<boolean>(false);
+  const navigation = useNavigation();
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const { url, storeId } = useLocalSearchParams<{ url: string, storeId: string }>();
   const webviewUrl = url ? url : 'https://www.google.com';
   // console.log('url', url);
-
+  const webviewRef: any = React.useRef(null);
   const [copiedText, setCopiedText] = useState('');
 
   const handlePresentPress = useCallback(() => {
@@ -58,6 +60,10 @@ const WebViewScreen = ({ route }: any) => {
       const text = await Clipboard.getStringAsync();
     }
   };
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  }
 
   function CouponRow({ item }: { item: any }) {
     return (
@@ -100,15 +106,30 @@ const WebViewScreen = ({ route }: any) => {
     <SafeAreaView style={{ flex: 1 }}>
       <WebView
         source={{ uri: webviewUrl }}
+        ref={webviewRef}
         style={styles.webview}
         startInLoadingState={true}
         userAgent="Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36"
       />
       {!isWebViewOpen && (
-        <Button
-          title="Get Vouchers"
-          onPress={handlePresentPress}
-        />
+        <View className='flex-row items-center justify-center'>
+          <Button
+            title="<"
+            onPress={() => { webviewRef?.current?.goBack() }}
+          />
+          <Button
+            title=">"
+            onPress={() => { webviewRef?.current?.goForward() }}
+          />
+          <Button
+            title="Get Vouchers"
+            onPress={handlePresentPress}
+          />
+          <Button
+            title="X"
+            onPress={handleGoBack}
+          />
+        </View>
       )}
       <Modal
         animationType="slide"
