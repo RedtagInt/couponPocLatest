@@ -4,7 +4,8 @@ import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, SafeAreaView, View, Button, Platform, StatusBar, Text, TouchableOpacity, FlatList, Modal, ToastAndroid, Alert } from 'react-native';
 import WebView from 'react-native-webview';
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { fetchData } from '@/services/baseservice';
 import { APIEndpoints } from '@/constants/appConstants';
 import * as Clipboard from 'expo-clipboard';
@@ -112,23 +113,25 @@ const WebViewScreen = ({ route }: any) => {
         userAgent="Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Mobile Safari/537.36"
       />
       {!isWebViewOpen && (
-        <View className='flex-row items-center justify-center'>
-          <Button
-            title="<"
-            onPress={() => { webviewRef?.current?.goBack() }}
-          />
-          <Button
-            title=">"
-            onPress={() => { webviewRef?.current?.goForward() }}
-          />
-          <Button
-            title="Get Vouchers"
-            onPress={handlePresentPress}
-          />
-          <Button
-            title="X"
-            onPress={handleGoBack}
-          />
+        <View className='flex-row items-center justify-between bg-stone-900 px-6 py-1'>
+          <View className='flex-row'>
+            <TouchableOpacity className='py-1 px-3' onPress={() => { webviewRef?.current?.goBack() }}>
+              <FontAwesome size={32} name="angle-left" className='text-white' color='#ffffff' />
+            </TouchableOpacity>
+            <TouchableOpacity className='ml-4 py-1 px-3' onPress={() => { webviewRef?.current?.goForward() }}>
+              <FontAwesome size={32} name="angle-right" className='text-white' color='#ffffff' />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity className='py-1 px-3' onPress={handlePresentPress}>
+              <View className='bg-lime-400 flex-row items-center px-6 py-1 rounded-lg'>
+                <FontAwesome size={20} name="tags" className='text-white' color='#000000' />
+                <Text className='ml-2 text-lg font-bold'>COUPONS</Text>
+              </View>
+          </TouchableOpacity>
+          <TouchableOpacity className='ml-4 py-1 px-4' onPress={handleGoBack}>
+              <AntDesign name="close" size={24} color="white" />
+          </TouchableOpacity>
+          
         </View>
       )}
       <Modal
