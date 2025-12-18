@@ -100,7 +100,7 @@ export default function CategoriesScreen({ navigation }: any) {
 
   const categoryCard = ({ item }: { item: any }) => {
     const bgClass = item.bgColorClass ?? "bg-gray-100";
-    const imageUri = item.image || FALLBACK_IMG;
+    const imageUri = item?.logoImage?.url || FALLBACK_IMG;
     return (
       <TouchableOpacity
         className={`flex-1 m-3 p-5 rounded-2xl ${bgClass}`}
@@ -122,7 +122,7 @@ export default function CategoriesScreen({ navigation }: any) {
   };
 
   const subItem = ({ item }: { item: any }) => {
-    const imageUri = item.image || FALLBACK_IMG;
+    const imageUri = item?.logoImage?.url || FALLBACK_IMG;
     return (
       <TouchableOpacity
         className="flex-row items-center px-4 py-5 bg-white inner"

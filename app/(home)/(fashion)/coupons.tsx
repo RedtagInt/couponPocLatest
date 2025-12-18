@@ -48,16 +48,16 @@ const coupons = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <View className="flex-row items-center py-3 px-4">
+            <View className="flex-row items-center py-5 px-4">
                 <View className="w-8 h-8 bg-gray-300 rounded-full mr-2" />
                 <Text className="text-xl font-semibold">{categoryData?.categoryName}</Text>
             </View>
             <ScrollView>
-                <View className="flex-row flex-wrap justify-between pt-2 px-4">
+                <View className="flex-row flex-wrap justify-between px-4">
                     {coupons.map((item: any) => (
                         <View key={item._id} className="w-[48%] bg-white rounded-2xl border border-gray-200 mb-4 p-3 shadow-sm">
                             {/* <View className="bg-gray-200 h-28 rounded-lg mb-3" /> */}
-                            <Image className="bg-gray-200 h-28 rounded-lg mb-3" source={{ uri: item?.logoImage?.url }}></Image>
+                            <Image className="bg-gray-200 h-28 rounded-lg mb-3" source={{ uri: item?.logoImage }}></Image>
                             <Text className="text-blue-600 text-sm font-medium mb-1">{item.brand}</Text>
                             <Text className="text-gray-700 text-sm mb-3 line-clamp-2 h-10">{item.voucherTitle}</Text>
                             <TouchableOpacity className="bg-gray-800 py-2 rounded-lg" onPress={() => openWebView(item.productLink, item.storeId)}>

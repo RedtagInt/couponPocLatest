@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#f8f8f8', // Example background color
+    backgroundColor: '#ffffff', // Example background color
   },
   headerContainer: {
     height: 60, // Example height

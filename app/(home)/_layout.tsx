@@ -14,20 +14,20 @@ export default function HomeLayout() {
   return (
      
     <CommonWrapper>
-      {/* <Header title="My App"></Header> */}
+      
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarActiveTintColor: "#59168b",
+          tabBarInactiveTintColor: "#94A3B8",
+          tabBarStyle: {
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 2,
+        },
         }}
       >
-        {/* <Tabs.Screen
         
-          name="index" // Matches app/(tabs)/index.tsx
-          options={{
-            title: 'Home',
-            tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
-          }}
-        /> */}
         <Tabs.Screen
           name="(shop)" // Matches app/(tabs)/profile.tsx
           options={{
@@ -46,7 +46,7 @@ export default function HomeLayout() {
           name="(account)/index" // Matches app/(tabs)/index.tsx
           options={{
             title: 'Account',
-            tabBarIcon: ({ color }) => <FontAwesome size={25} name="user" color={color} />,
+            tabBarIcon: ({ color }) => <FontAwesome size={28} name="user" color={color} />,
           }}
         />
         <Tabs.Screen
