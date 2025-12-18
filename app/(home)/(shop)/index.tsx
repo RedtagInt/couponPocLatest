@@ -173,7 +173,7 @@ const brands = ({ navigation }: any) => {
 
   return (
 
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1">
       <Modal
         animationType="slide"
         transparent={true}
@@ -184,11 +184,11 @@ const brands = ({ navigation }: any) => {
           <View style={styles.modalContent}>
 
             <View className="bg-white rounded-t-3xl overflow-hidden">
-              <View className="flex-row items-center justify-between py-3 border-b border-gray-200">
-                <Text className="text-2xl font-semibold">User Not Found !!!</Text>
-                <TouchableOpacity onPress={handleUserprofileCancel} className="p-1">
+              <View className="flex-row items-center justify-between pb-2">
+                {/* <Text className="text-2xl font-semibold"></Text> */}
+                {/* <TouchableOpacity onPress={handleUserprofileCancel} className="p-1">
                   <Ionicons name="close" size={28} color="#0b1220" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
               <CreateUserProfile userProfile={userProfile} onSubmit={handleUserProfileSubmit} onCancel={handleUserprofileCancel}></CreateUserProfile>
 
@@ -201,8 +201,8 @@ const brands = ({ navigation }: any) => {
         {/* Trending Brands */}
 
 
-        <View className="px-4 mt-4">
-          <Text className="text-xl font-semibold mb-3">Trending Brands</Text>
+        <View className="p-8">
+          <Text className="text-xl font-bold mb-4 text-black">Trending Brands</Text>
           <FlatList
             horizontal
             data={trendingBrands}
@@ -210,10 +210,10 @@ const brands = ({ navigation }: any) => {
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => openWebView(item.affiliateLink, item._id)}>
                 <View className="mr-5 items-center">
-                  <View className="w-24 h-24 bg-white rounded-2xl overflow-hidden shadow">
+                  <View className="w-24 h-24 rounded-2xl overflow-hidden shadow">
                     <Image source={{ uri: item?.logoImage?.url }} className="w-full h-full" resizeMode="cover" />
                   </View>
-                  <Text className="mt-2 font-medium text-sm">{item?.storeName}</Text>
+                  <Text className="mt-2 font-medium text-black text-xs mb-2">{item?.storeName}</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -222,12 +222,13 @@ const brands = ({ navigation }: any) => {
         </View>
 
         {/* Search Bar */}
-        <View className="px-4 mt-5">
-          <View className="flex-row items-center bg-gray-100 rounded-xl px-3 py-2">
+        <View className="px-8 pb-0">
+          <Text className="text-xl font-bold mb-3">Explore Brands</Text>
+          <View className="flex-row items-center bg-white rounded-2xl px-6 py-1 shadow">
             <Ionicons name="search" size={20} color="#6b7280" />
             <TextInput
               placeholder="Search brands"
-              className="ml-3 flex-1 text-base"
+              className="ml-3 flex-1 text-lg"
               placeholderTextColor="#9ca3af"
               value={searchBrandsText}
               onChangeText={handleSearch}
@@ -236,18 +237,23 @@ const brands = ({ navigation }: any) => {
         </View>
 
         {/* Alphabet Buttons */}
-        <View className="px-4 mt-4 flex flex-row gap-3 overflow-scroll">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mx-7 mt-6"
+          contentContainerStyle={{ gap: 12 }}
+        >
           {categoryTabs.map((label) => (
             <TouchableOpacity
               key={label}
-              className="px-4 py-2 bg-blue-600 rounded-full"
-              style={selectedCategory === label ? styles.activeCategory : ''}
+              className="px-5 py-2 bg-white border border-gray-200 rounded-full"
+              style={selectedCategory === label ? styles.activeCategory : undefined}
               onPress={() => handleFilterClick(label)}
             >
-              <Text className="text-white font-medium">{label}</Text>
+              <Text className="font-semibold text-sm uppercase" style={selectedCategory === label ? styles.activeCategoryText : undefined}>{label}</Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
 
         {/* Brand List */}
 
@@ -287,19 +293,31 @@ const brands = ({ navigation }: any) => {
           )}
         </View>
 
-      </ScrollView>
+        
       {!searchBrandsText &&
-        <FlatList
-          ref={flatListRef}
-          data={filteredcategoryWiseBrands[0]?.stores}
-          keyExtractor={item => item._id}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleCategoryWiseBrands(item)}>
-              <Text>{item.storeName} ({item.storeLink})</Text>
+        <View className="flex-row flex-wrap px-3">
+          {filteredcategoryWiseBrands[0]?.stores?.map((item: { _id: React.Key; logoImage: { url: any; }; storeName: string; }) => (
+            <TouchableOpacity
+              key={item._id}
+              onPress={() => handleCategoryWiseBrands(item)}
+              className="w-1/4 p-2"
+            >
+              <View className="items-center">
+                <Image
+                  source={{ uri: item.logoImage?.url }}
+                  className="w-20 h-20 rounded-md"
+                  resizeMode="contain"
+                />
+                <Text className="mt-2 text-xs font-medium text-center">
+                  {item.storeName}
+                </Text>
+              </View>
             </TouchableOpacity>
-          )}
-        />}
+          ))}
+        </View>
+      }
 
+      </ScrollView>
 
     </SafeAreaView>
   );
@@ -335,9 +353,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
   activeCategory: {
-    backgroundColor: 'grey',
-    // color: '#4f39f6',
+    backgroundColor: '#3c0366',
   },
+  activeCategoryText: {
+    color: 'white'
+  }
 });
 
 export default brands

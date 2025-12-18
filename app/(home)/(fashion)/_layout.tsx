@@ -19,12 +19,11 @@ const _layout = () => {
             <TabDataContext.Provider value={{ sharedData, setSharedData }}>
             <Tabs>
                 <TabList style={styles.tabList}>
-                    <TabTrigger name="index" href="/(home)/(fashion)" style={styles.tabTriggerBtn}>
-                        <Text style={isTabActive('/') ? styles.activeTabButton: styles.tabButton }>Products</Text>
-
-                    </TabTrigger>
                     <TabTrigger name="coupons" href="/(home)/(fashion)/coupons" style={styles.tabTriggerBtn}>
                         <Text style={isTabActive('/coupons') ? styles.activeTabButton: styles.tabButton  }>Coupons</Text>
+                    </TabTrigger>
+                    <TabTrigger name="index" href="/(home)/(fashion)" style={styles.tabTriggerBtn}>
+                        <Text style={isTabActive('/') ? styles.activeTabButton: styles.tabButton }>Products</Text>
                     </TabTrigger>
                 </TabList>
                 <View style={{ flex: 1 }}>
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         paddingVertical: 0,
         borderBottomWidth: 2,
-        borderBottomColor: 'gray',
+        borderBottomColor: '#f3e8ff',
 
     },
     tabTriggerBtn: {
@@ -70,16 +69,16 @@ const styles = StyleSheet.create({
          flexDirection: 'row',
          textAlign: 'center',
          fontSize: 16,
-         paddingVertical: 10
+         paddingVertical: 16
     },
     activeTabButton: {
         backgroundColor: 'white',
         textAlign: 'center', // Example active background color
         fontSize: 16,
-        color: 'blue',
+        color: '#59168b',
         borderBottomWidth: 2,
-        borderBottomColor: 'blue',
-        paddingVertical: 10
+        borderBottomColor: '#59168b',
+        paddingVertical: 16
     },
     tabText: {
         fontSize: 16,

@@ -13,7 +13,7 @@ const CommonWrapper = ({ children, title }: any) => {
     return (
         <View style={styles.container}>
             {/* <Text style={styles.headerTitle}>{title}</Text> */}
-            <View className="px-6 bg-gray-100 py-2" style={styles.userRow}>
+            <View className="px-6 bg-gray-100 py-2 hidden" style={styles.userRow}>
                 <View>
                     <Text>Welcome,</Text>
                     <Text style={styles.userName}>{userData?.name}</Text>
